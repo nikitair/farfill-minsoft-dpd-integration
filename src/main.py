@@ -27,7 +27,7 @@ async def create_shipment(request: Request, id: int):
     payload = None
     
     try:
-        payload = request.json()
+        payload = await request.json()
         logger.info(f"{create_shipment.__name__} -- RECEIVED PAYLOAD - {payload}")
     except Exception:
         logger.exception(f"{create_shipment.__name__} -- ! BAD PAYLOAD ERROR")
