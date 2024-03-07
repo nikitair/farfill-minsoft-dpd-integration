@@ -1,4 +1,12 @@
+import json
 import requests
+
+
+
+def save_to_backup(data):
+    backup_file = "data/backups.json"
+    with open(backup_file, "w") as f:
+        json.dump(data, f, indent=4)
 
 
 def retrieve_geosession_token(api_key):
