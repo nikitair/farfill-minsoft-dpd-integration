@@ -8,20 +8,20 @@ app = FastAPI()
 
 
 @app.get("/")
-def index():
+async def index():
     logger.info(f"{index.__name__} -- INDEX ENDPOINT TRIGGERED")
     return {"message": "Hello World!"}
 
 
 @app.get("/api/Order/{id}/Shipments")
-def get_shipment(request: Request, id: int):
+async def get_shipment(request: Request, id: int):
     logger.info(f"{get_shipment.__name__} -- GET SHIPMENT ENDPOINT TRIGGERED")
     shipments_data = request.json()
     # save_to_backup(shipments_data)
 
 
 @app.post("/api/Order/{id}/Shipments/CreateShipment")
-def create_shipment(request: Request, id: int):
+async def create_shipment(request: Request, id: int):
     logger.info(f"{create_shipment.__name__} -- CREATE SHIPMENT ENDPOINT TRIGGERED; id - {id}")
 
     payload = None
@@ -40,7 +40,7 @@ def create_shipment(request: Request, id: int):
 
 
 @app.delete("/api/Order/{id}/Shipments/CancelShipment")
-def cancel_shipment(request: Request, id: int):
+async def cancel_shipment(request: Request, id: int):
     logger.info(f"{cancel_shipment.__name__} -- CANCEL SHIPMENT ENDPOINT TRIGGERED")
     pass
 
