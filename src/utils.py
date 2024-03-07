@@ -34,3 +34,4 @@ if __name__ == '__main__':
     # Retrieve Geosession token
     geosession_token = retrieve_geosession_token(api_key)
     print("Retrieved Geosession token:", geosession_token)
+

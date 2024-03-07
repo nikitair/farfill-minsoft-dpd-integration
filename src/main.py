@@ -2,7 +2,7 @@ from fastapi import FastAPI, Request, HTTPException
 import uvicorn
 from logs.logging_config import logger
 from utils import save_to_backup
-
+from views import create_shipment_view
 
 app = FastAPI()
 
@@ -34,9 +34,8 @@ async def create_shipment(request: Request, id: int):
         raise HTTPException(status_code=422, detail={"message": "Unprocessable Payload"})
 
     if payload:
-        # call views her
-       return payload
-
+        response = create_shipment_view(payload)  # Pass the payload to the function in view.py
+        return response
 
 
 @app.delete("/api/Order/{id}/Shipments/CancelShipment")
