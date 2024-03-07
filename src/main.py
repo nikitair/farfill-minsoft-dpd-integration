@@ -21,8 +21,8 @@ def get_shipment(request: Request, id: int):
 
 
 @app.post("/api/Order/{id}/Shipments/CreateShipment")
-def create_shipment(request: Request, shipment_id: int):
-    logger.info(f"{create_shipment.__name__} -- CREATE SHIPMENT ENDPOINT TRIGGERED")
+def create_shipment(request: Request, id: int):
+    logger.info(f"{create_shipment.__name__} -- CREATE SHIPMENT ENDPOINT TRIGGERED; id - {id}")
 
     payload = None
     
