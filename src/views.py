@@ -52,9 +52,9 @@ def create_shipment_view(payload):
                 "CustomsDocumentName": "",
                 "CustomsPDFDocumentAsBase64": ""
             }
-        ]
+            ]
+        }
     }
-}
     
 
     parsed_data = json.loads(result)
