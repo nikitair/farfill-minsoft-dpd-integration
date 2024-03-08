@@ -23,7 +23,7 @@ async def create_shipment_test(request: CreateShipmentRequest):
     payload = None
     
     try:
-        payload = await request.json()
+        payload = dict(request)
         logger.info(f"{create_shipment_test.__name__} -- RECEIVED PAYLOAD - {payload}")
     except Exception:
         logger.exception(f"{create_shipment_test.__name__} -- ! BAD PAYLOAD ERROR")
@@ -64,7 +64,7 @@ async def create_shipment(request: CreateShipmentRequest):
     payload = None
     
     try:
-        payload = await request.json()
+        payload = dict(request)
         logger.info(f"{create_shipment.__name__} -- RECEIVED PAYLOAD - {payload}")
     except Exception:
         logger.exception(f"{create_shipment.__name__} -- ! BAD PAYLOAD ERROR")
@@ -85,7 +85,7 @@ async def cancel_shipment_test(request: CancelShipmentRequest):
     payload = None
     
     try:
-        payload = await request.json()
+        payload = dict(request)
         logger.info(f"{cancel_shipment_test.__name__} -- RECEIVED PAYLOAD - {payload}")
     except Exception:
         logger.exception(f"{cancel_shipment_test.__name__} -- ! BAD PAYLOAD ERROR")
@@ -106,7 +106,7 @@ async def cancel_shipment(request: CancelShipmentRequest):
     payload = None
     
     try:
-        payload = await request.json()
+        payload = dict(request)
         logger.info(f"{cancel_shipment.__name__} -- RECEIVED PAYLOAD - {payload}")
     except Exception:
         logger.exception(f"{cancel_shipment.__name__} -- ! BAD PAYLOAD ERROR")
