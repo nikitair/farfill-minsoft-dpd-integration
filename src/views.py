@@ -1,3 +1,4 @@
+import json
 from logs.logging_config import logger
 import requests
 
@@ -28,41 +29,47 @@ def create_shipment_view(payload):
     }
 
     result = {
-        "Success": False,
-        "ErrorMessages": None,
-        "Shipment": {
+    "Success": False,
+    "ErrorMessages": None,
+    "Shipment": {
         "MainTrackingNumber": "",
         "LabelFormat": "PNG",
         "CustomsDocumentFormat": "PDF",
         "Packages": [
-        {
-        "TrackingNumber": "",
-        "TrackingUrl": None,
-        "ParcelNo": 1,
-        "LabelAsBase64": "",
-        "CustomsDocumentName": "",
-        "CustomsPDFDocumentAsBase64": ""
-        },
-        {
-        "TrackingNumber": "",
-        "TrackingUrl": None,
-        "ParcelNo": 3,
-        "LabelAsBase64": "",
-        "CustomsDocumentName": "",
-        "CustomsPDFDocumentAsBase64": ""
-        }
+            {
+                "TrackingNumber": "",
+                "TrackingUrl": None,
+                "ParcelNo": 1,
+                "LabelAsBase64": "",
+                "CustomsDocumentName": "",
+                "CustomsPDFDocumentAsBase64": ""
+            },
+            {
+                "TrackingNumber": "",
+                "TrackingUrl": None,
+                "ParcelNo": 3,
+                "LabelAsBase64": "",
+                "CustomsDocumentName": "",
+                "CustomsPDFDocumentAsBase64": ""
+            }
         ]
-        }}
+    }
+}
+    
 
+    parsed_data = json.loads(result)
+
+    
     try:
         response = requests.get(endpoint, params=payload, headers=headers)
         response.raise_for_status() 
-        # return response.json()
     except requests.RequestException as e:
-        # Handle request exceptions
         logger.error("send_dpd_request -- Error sending request to DPD API:", exc_info=True)
-        # return None
-    return result
+    return parsed_data
+
+
+
+
 
 
 def cancel_shipment_view(data):

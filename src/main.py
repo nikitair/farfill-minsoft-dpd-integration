@@ -60,11 +60,25 @@ async def create_shipment(request: Request, id: int):
 
     if payload:
         response = create_shipment_view(payload)  # Pass the payload to the function in view.py
+        
+        shipment = response["Shipment"]
+        main_tracking_number = shipment["MainTrackingNumber"]
+        label_format = shipment["LabelFormat"]
+        customs_document_format = shipment["CustomsDocumentFormat"]
+        packages = shipment["Packages"]
+
+        for package in packages:
+            tracking_number = package["TrackingNumber"]
+            tracking_url = package["TrackingUrl"]
+            parcel_no = package["ParcelNo"]
+            label_as_base64 = package["LabelAsBase64"]
+            customs_document_name = package["CustomsDocumentName"]
+            customs_pdf_document_as_base64 = package["CustomsPDFDocumentAsBase64"]
         return response
 
 
 # @app.delete("/api/Order/{id}/Shipments/CancelShipment")
-@app.delete("/api/mintsoft/test/CreateShipment")
+@app.delete("/api/mintsoft/test/CancelShipment")
 async def cancel_shipment(request: Request, id: int):
     logger.info(f"{cancel_shipment.__name__} -- CANCEL SHIPMENT ENDPOINT TRIGGERED")
     return {
