@@ -1,4 +1,7 @@
 import json
+import schedule
+import time
+
 from utils import login
 
 
@@ -11,5 +14,9 @@ def update_geosession():
         json.dump(data, file, indent=4)
 
 
-if __name__ == "__main__":
-    update_geosession()
+schedule.every().day.at("06:00").do(update_geosession)
+
+
+while True:
+    schedule.run_pending()
+    time.sleep(1)
