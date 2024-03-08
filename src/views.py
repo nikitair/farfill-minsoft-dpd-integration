@@ -65,7 +65,7 @@ def create_shipment_view(payload):
         response.raise_for_status() 
     except requests.RequestException as e:
         logger.error("send_dpd_request -- Error sending request to DPD API:", exc_info=True)
-    return parsed_data
+    return response.json()
 
 
 
