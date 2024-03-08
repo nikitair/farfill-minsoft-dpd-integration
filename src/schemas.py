@@ -75,7 +75,7 @@ class CreateShipmentRequest:
             customs_description: str
             country_of_manufacture: str
 
-        parcels: List[]
+        parcels: List
 
     parcels: List[Parcel]
 
