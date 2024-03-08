@@ -26,16 +26,16 @@ async def create_shipment_test(request: Request):
     logger.info(f"{create_shipment_test.__name__} -- CREATE SHIPMENT TEST ENDPOINT TRIGGERED")
 
     payload = None
-    headers = request.headers
+    # headers = request.headers
 
-    token = headers.get("X-API-KEY")
-    if token != AUTH_TOKEN:
-        response = Response(
-            content=json.dumps({"Success": False, "ErrorMessages": "Unauthorized"}),
-            status_code=401,
-            media_type="application/json"
-        )
-        return response
+    # token = headers.get("X-API-KEY")
+    # if token != AUTH_TOKEN:
+    #     response = Response(
+    #         content=json.dumps({"Success": False, "ErrorMessages": "Unauthorized"}),
+    #         status_code=401,
+    #         media_type="application/json"
+    #     )
+    #     return response
     
     try:
         payload = await request.json()
@@ -106,16 +106,16 @@ async def cancel_shipment_test(request: Request):
     logger.info(f"{cancel_shipment.__name__} -- CANCEL SHIPMENT TEST ENDPOINT TRIGGERED")
 
     payload = None
-    headers = request.headers
+    # headers = request.headers
 
-    token = headers.get("X-API-KEY")
-    if token != AUTH_TOKEN:
-        response = Response(
-            content=json.dumps({"Success": False, "ErrorMessages": "Unauthorized"}),
-            status_code=401,
-            media_type="application/json"
-        )
-        return response
+    # token = headers.get("X-API-KEY")
+    # if token != AUTH_TOKEN:
+    #     response = Response(
+    #         content=json.dumps({"Success": False, "ErrorMessages": "Unauthorized"}),
+    #         status_code=401,
+    #         media_type="application/json"
+    #     )
+    #     return response
     
     try:
         payload = await request.json()
