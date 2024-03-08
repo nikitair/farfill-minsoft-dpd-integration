@@ -50,7 +50,7 @@ async def create_shipment(request: Request):
     logger.info(f"{create_shipment.__name__} -- CREATE SHIPMENT ENDPOINT TRIGGERED")
 
     payload = None
-    
+
     try:
         payload = await request.json()
         logger.info(f"{create_shipment.__name__} -- RECEIVED PAYLOAD - {payload}")
@@ -60,10 +60,8 @@ async def create_shipment(request: Request):
 
     if payload:
         response = create_shipment_view(payload)  # Pass the payload to the function in view.py
-        
-        
-        return response
 
+        return response
 
 
 @app.delete("/api/test/mintsoft/live/CancelShipment")
@@ -75,15 +73,13 @@ async def cancel_shipment_test(request: Request):
         }
 
 
-
 @app.delete("/api/mintsoft/live/CancelShipment")
 async def cancel_shipment(request: Request):
     logger.info(f"{cancel_shipment.__name__} -- CANCEL SHIPMENT ENDPOINT TRIGGERED")
     return {
         "Success": True,
-        "ErrorMessages": [ "Already Shipped", "Another message" ]
+        "ErrorMessages": ["Already Shipped", "Another message"]
         }
-
 
 
 if __name__ =="__main__":

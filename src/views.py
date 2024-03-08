@@ -3,59 +3,47 @@ from logs.logging_config import logger
 import requests
 
 
-login_endpoint = "https://api.dpd.co.uk/user/?action=login"
-login_headers = {
-    "Authorization": "Basic ZmFyZmlsbDpmYXJmaWxsQDEyMw==",
-    "Content-Type": "application/json",
-    "Accept": "application/json"
-}
-
-response = requests.post(login_endpoint, headers=login_headers)
-response.raise_for_status()  # Перевіряємо, чи немає помилки у відповіді
-
-# Отримуємо значення geoSession з відповіді
-login_data = response.json()["data"]
-geo_session = login_data["geoSession"]
-
-
-
 def create_shipment_view(payload):
+    with open("data/auth_data.json", "r") as file:
+        data = json.load(file)
+    geosession = data["geosession"]
+    auth_token = data["auth_token"]
+
     endpoint = "https://api.dpd.co.uk/shipping/network/"
     headers = {
-        "Authorization": "Basic ZmFyZmlsbDpmYXJmaWxsQDEyMw==",
+        "Authorization": auth_token,
         "Accept": "application/json",
-        "GeoSession": geo_session,
+        "GeoSession": geosession,
         "GeoClient": "account/118990"
     }
 
     result = {
-    "Success": False,
-    "ErrorMessages": None,
-    "Shipment": {
-        "MainTrackingNumber": "",
-        "LabelFormat": "PNG",
-        "CustomsDocumentFormat": "PDF",
-        "Packages": [
-            {
-                "TrackingNumber": "",
-                "TrackingUrl": None,
-                "ParcelNo": 1,
-                "LabelAsBase64": "",
-                "CustomsDocumentName": "",
-                "CustomsPDFDocumentAsBase64": ""
-            },
-            {
-                "TrackingNumber": "",
-                "TrackingUrl": None,
-                "ParcelNo": 3,
-                "LabelAsBase64": "",
-                "CustomsDocumentName": "",
-                "CustomsPDFDocumentAsBase64": ""
-            }
+        "Success": False,
+        "ErrorMessages": None,
+        "Shipment": {
+            "MainTrackingNumber": "",
+            "LabelFormat": "PNG",
+            "CustomsDocumentFormat": "PDF",
+            "Packages": [
+                {
+                    "TrackingNumber": "",
+                    "TrackingUrl": None,
+                    "ParcelNo": 1,
+                    "LabelAsBase64": "",
+                    "CustomsDocumentName": "",
+                    "CustomsPDFDocumentAsBase64": ""
+                },
+                {
+                    "TrackingNumber": "",
+                    "TrackingUrl": None,
+                    "ParcelNo": 3,
+                    "LabelAsBase64": "",
+                    "CustomsDocumentName": "",
+                    "CustomsPDFDocumentAsBase64": ""
+                }
             ]
         }
     }
-    
 
     parsed_data = json.loads(result)
     shipment = parsed_data["Shipment"]
@@ -71,17 +59,13 @@ def create_shipment_view(payload):
         label_as_base64 = package["LabelAsBase64"]
         customs_document_name = package["CustomsDocumentName"]
         customs_pdf_document_as_base64 = package["CustomsPDFDocumentAsBase64"]
-    
+
     try:
         response = requests.get(endpoint, params=payload, headers=headers)
         response.raise_for_status() 
     except requests.RequestException as e:
         logger.error("send_dpd_request -- Error sending request to DPD API:", exc_info=True)
     return result
-
-
-
-
 
 
 def cancel_shipment_view(data):
