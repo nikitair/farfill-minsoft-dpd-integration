@@ -64,10 +64,13 @@ async def create_shipment(request: Request, id: int):
 
 
 # @app.delete("/api/Order/{id}/Shipments/CancelShipment")
-@app.delete("/farfill.xyz/api/mintsoft/test/CreateShipment")
+@app.delete("/api/mintsoft/test/CreateShipment")
 async def cancel_shipment(request: Request, id: int):
     logger.info(f"{cancel_shipment.__name__} -- CANCEL SHIPMENT ENDPOINT TRIGGERED")
-    pass
+    return {
+        "Success": True,
+        "ErrorMessages": [ "Already Shipped", "Another message" ]
+        }
 
 
 

@@ -27,15 +27,42 @@ def create_shipment_view(payload):
         "GeoClient": "account/118990"
     }
 
+    result = {
+        "Success": False,
+        "ErrorMessages": None,
+        "Shipment": {
+        "MainTrackingNumber": "",
+        "LabelFormat": "PNG",
+        "CustomsDocumentFormat": "PDF",
+        "Packages": [
+        {
+        "TrackingNumber": "",
+        "TrackingUrl": None,
+        "ParcelNo": 1,
+        "LabelAsBase64": "",
+        "CustomsDocumentName": "",
+        "CustomsPDFDocumentAsBase64": ""
+        },
+        {
+        "TrackingNumber": "",
+        "TrackingUrl": None,
+        "ParcelNo": 3,
+        "LabelAsBase64": "",
+        "CustomsDocumentName": "",
+        "CustomsPDFDocumentAsBase64": ""
+        }
+        ]
+        }}
+
     try:
         response = requests.get(endpoint, params=payload, headers=headers)
         response.raise_for_status() 
-        return response.json()
+        # return response.json()
     except requests.RequestException as e:
         # Handle request exceptions
         logger.error("send_dpd_request -- Error sending request to DPD API:", exc_info=True)
-        return None
-
+        # return None
+    return result
 
 
 def cancel_shipment_view(data):
