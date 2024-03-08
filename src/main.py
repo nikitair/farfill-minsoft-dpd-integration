@@ -13,7 +13,8 @@ async def index():
     return {"message": "Hello World!"}
 
 
-@app.get("/api/Order/{id}/Shipments")
+# @app.get("/api/Order/{id}/Shipments")
+@app.get("/farfill.xyz/api/mintsoft/test/CreateShipment")
 async def get_shipment(request: Request, id: int):
     logger.info(f"{get_shipment.__name__} -- GET SHIPMENT ENDPOINT TRIGGERED")
     shipments_data = request.json()
@@ -38,7 +39,8 @@ async def create_shipment(request: Request, id: int):
         return response
 
 
-@app.delete("/api/Order/{id}/Shipments/CancelShipment")
+# @app.delete("/api/Order/{id}/Shipments/CancelShipment")
+@app.delete("/farfill.xyz/api/mintsoft/test/CreateShipment")
 async def cancel_shipment(request: Request, id: int):
     logger.info(f"{cancel_shipment.__name__} -- CANCEL SHIPMENT ENDPOINT TRIGGERED")
     pass
