@@ -22,9 +22,9 @@ async def create_shipment_test(request: Request):
     
     try:
         payload = await request.json()
-        logger.info(f"{create_shipment.__name__} -- RECEIVED PAYLOAD - {payload}")
+        logger.info(f"{create_shipment_test.__name__} -- RECEIVED PAYLOAD - {payload}")
     except Exception:
-        logger.exception(f"{create_shipment.__name__} -- ! BAD PAYLOAD ERROR")
+        logger.exception(f"{create_shipment_test.__name__} -- ! BAD PAYLOAD ERROR")
         raise HTTPException(status_code=422, detail={"message": "Unprocessable Payload"})
 
     return {
@@ -79,6 +79,17 @@ async def create_shipment(request: Request):
 @app.delete("/api/test/mintsoft/live/CancelShipment")
 async def cancel_shipment_test(request: Request):
     logger.info(f"{cancel_shipment.__name__} -- CANCEL SHIPMENT TEST ENDPOINT TRIGGERED")
+
+    payload = None
+    
+    try:
+        payload = await request.json()
+        logger.info(f"{cancel_shipment_test.__name__} -- RECEIVED PAYLOAD - {payload}")
+    except Exception:
+        logger.exception(f"{cancel_shipment_test.__name__} -- ! BAD PAYLOAD ERROR")
+        raise HTTPException(status_code=422, detail={"message": "Unprocessable Payload"})
+    
+
     return {
         "Success": True,
         "ErrorMessages": [ "Already Shipped", "Another message" ]
@@ -89,6 +100,17 @@ async def cancel_shipment_test(request: Request):
 @app.delete("/api/mintsoft/live/CancelShipment")
 async def cancel_shipment(request: Request):
     logger.info(f"{cancel_shipment.__name__} -- CANCEL SHIPMENT ENDPOINT TRIGGERED")
+
+    payload = None
+    
+    try:
+        payload = await request.json()
+        logger.info(f"{cancel_shipment.__name__} -- RECEIVED PAYLOAD - {payload}")
+    except Exception:
+        logger.exception(f"{cancel_shipment.__name__} -- ! BAD PAYLOAD ERROR")
+        raise HTTPException(status_code=422, detail={"message": "Unprocessable Payload"})
+    
+
     return {
         "Success": True,
         "ErrorMessages": [ "Already Shipped", "Another message" ]
