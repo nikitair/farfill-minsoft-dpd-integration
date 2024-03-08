@@ -14,9 +14,9 @@ async def index():
 
 
 # @app.get("/api/Order/{id}/Shipments")
-@app.post("/api/mintsoft/test/CreateShipment")
-async def get_shipment(request: Request, id: int):
-    logger.info(f"{get_shipment.__name__} -- GET SHIPMENT ENDPOINT TRIGGERED")
+@app.post("/api/test/Order/{id}/Shipments/CreateShipment")
+async def create_shipment_test(request: Request, id: int):
+    logger.info(f"{create_shipment_test.__name__} -- GET SHIPMENT ENDPOINT TRIGGERED")
     shipments_data = request.json()
     # save_to_backup(shipments_data)
 
