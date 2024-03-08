@@ -17,6 +17,16 @@ async def index():
 @app.post("/api/test/Order/Shipments/CreateShipment")
 async def create_shipment_test(request: Request):
     logger.info(f"{create_shipment_test.__name__} -- CREATE SHIPMENT TEST ENDPOINT TRIGGERED")
+
+    payload = None
+    
+    try:
+        payload = await request.json()
+        logger.info(f"{create_shipment.__name__} -- RECEIVED PAYLOAD - {payload}")
+    except Exception:
+        logger.exception(f"{create_shipment.__name__} -- ! BAD PAYLOAD ERROR")
+        raise HTTPException(status_code=422, detail={"message": "Unprocessable Payload"})
+
     return {
         "Success": True,
         "ErrorMessages": None,
