@@ -5,7 +5,7 @@ import requests
 def login():
     with open("data/auth_data.json", "r") as file:
         data = json.load(file)
-        auth_token = data["auth_token"]
+    auth_token = data["auth_token"]
 
     login_endpoint = "https://api.dpd.co.uk/user/?action=login"
     login_headers = {
