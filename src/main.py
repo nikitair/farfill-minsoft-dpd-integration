@@ -14,8 +14,8 @@ async def index():
 
 
 # @app.get("/api/Order/{id}/Shipments")
-@app.post("/api/test/Order/{id}/Shipments/CreateShipment")
-async def create_shipment_test(request: Request, id: int):
+@app.post("/api/test/Order/Shipments/CreateShipment")
+async def create_shipment_test(request: Request):
     logger.info(f"{create_shipment_test.__name__} -- CREATE SHIPMENT TEST ENDPOINT TRIGGERED")
     return {
         "Success": True,
@@ -45,9 +45,9 @@ async def create_shipment_test(request: Request, id: int):
         }}
 
 
-@app.post("/api/Order/{id}/Shipments/CreateShipment")
-async def create_shipment(request: Request, id: int):
-    logger.info(f"{create_shipment.__name__} -- CREATE SHIPMENT ENDPOINT TRIGGERED; id - {id}")
+@app.post("/api/Order/Shipments/CreateShipment")
+async def create_shipment(request: Request):
+    logger.info(f"{create_shipment.__name__} -- CREATE SHIPMENT ENDPOINT TRIGGERED")
 
     payload = None
     
@@ -65,9 +65,19 @@ async def create_shipment(request: Request, id: int):
         return response
 
 
-# @app.delete("/api/Order/{id}/Shipments/CancelShipment")
-@app.delete("/api/mintsoft/test/CancelShipment")
-async def cancel_shipment(request: Request, id: int):
+
+@app.delete("/api/test/mintsoft/live/CancelShipment")
+async def cancel_shipment_test(request: Request):
+    logger.info(f"{cancel_shipment.__name__} -- CANCEL SHIPMENT TEST ENDPOINT TRIGGERED")
+    return {
+        "Success": True,
+        "ErrorMessages": [ "Already Shipped", "Another message" ]
+        }
+
+
+
+@app.delete("/api/mintsoft/live/CancelShipment")
+async def cancel_shipment(request: Request):
     logger.info(f"{cancel_shipment.__name__} -- CANCEL SHIPMENT ENDPOINT TRIGGERED")
     return {
         "Success": True,
