@@ -16,9 +16,33 @@ async def index():
 # @app.get("/api/Order/{id}/Shipments")
 @app.post("/api/test/Order/{id}/Shipments/CreateShipment")
 async def create_shipment_test(request: Request, id: int):
-    logger.info(f"{create_shipment_test.__name__} -- GET SHIPMENT ENDPOINT TRIGGERED")
-    shipments_data = request.json()
-    # save_to_backup(shipments_data)
+    logger.info(f"{create_shipment_test.__name__} -- CREATE SHIPMENT TEST ENDPOINT TRIGGERED")
+    return {
+        "Success": True,
+        "ErrorMessages": None,
+        "Shipment": {
+        "MainTrackingNumber": "TrackingNumber01",
+        "LabelFormat": "PNG",
+        "CustomsDocumentFormat": "PDF",
+        "Packages": [
+        {
+        "TrackingNumber": "TrackingNumber01",
+        "TrackingUrl": None,
+        "ParcelNo": 1,
+        "LabelAsBase64": "",
+        "CustomsDocumentName": "",
+        "CustomsPDFDocumentAsBase64": ""
+        },
+        {
+        "TrackingNumber": "TrackingNumber02",
+        "TrackingUrl": None,
+        "ParcelNo": 3,
+        "LabelAsBase64": "LabelAsBase64.....",
+        "CustomsDocumentName": "CN22",
+        "CustomsPDFDocumentAsBase64": "CustomsPDFDocumentAsBase64...."
+        }
+        ]
+        }}
 
 
 @app.post("/api/Order/{id}/Shipments/CreateShipment")
