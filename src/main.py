@@ -14,7 +14,7 @@ async def index():
 
 
 # @app.get("/api/Order/{id}/Shipments")
-@app.get("/farfill.xyz/api/mintsoft/test/CreateShipment")
+@app.post("/api/mintsoft/test/CreateShipment")
 async def get_shipment(request: Request, id: int):
     logger.info(f"{get_shipment.__name__} -- GET SHIPMENT ENDPOINT TRIGGERED")
     shipments_data = request.json()
