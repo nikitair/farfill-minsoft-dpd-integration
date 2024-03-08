@@ -60,8 +60,7 @@ async def create_shipment(request: Request):
 
     if payload:
         response = create_shipment_view(payload)  # Pass the payload to the function in view.py
-        
-        
+
         return response
 
 
