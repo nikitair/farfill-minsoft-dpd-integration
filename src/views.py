@@ -45,6 +45,9 @@ def create_shipment_view(payload):
         }
     }
 
+    # temp
+    return result
+
     parsed_data = json.loads(result)
     shipment = parsed_data["Shipment"]
     main_tracking_number = shipment["MainTrackingNumber"]
