@@ -56,21 +56,23 @@ def create_shipment_view(payload):
         }
     }
     
+    try:
+        parsed_data = json.loads(result)
+        shipment = parsed_data["Shipment"]
+        main_tracking_number = shipment["MainTrackingNumber"]
+        label_format = shipment["LabelFormat"]
+        customs_document_format = shipment["CustomsDocumentFormat"]
+        packages = shipment["Packages"]
 
-    parsed_data = json.loads(result)
-    shipment = parsed_data["Shipment"]
-    main_tracking_number = shipment["MainTrackingNumber"]
-    label_format = shipment["LabelFormat"]
-    customs_document_format = shipment["CustomsDocumentFormat"]
-    packages = shipment["Packages"]
-
-    for package in packages:
-        tracking_number = package["TrackingNumber"]
-        tracking_url = package["TrackingUrl"]
-        parcel_no = package["ParcelNo"]
-        label_as_base64 = package["LabelAsBase64"]
-        customs_document_name = package["CustomsDocumentName"]
-        customs_pdf_document_as_base64 = package["CustomsPDFDocumentAsBase64"]
+        for package in packages:
+            tracking_number = package["TrackingNumber"]
+            tracking_url = package["TrackingUrl"]
+            parcel_no = package["ParcelNo"]
+            label_as_base64 = package["LabelAsBase64"]
+            customs_document_name = package["CustomsDocumentName"]
+            customs_pdf_document_as_base64 = package["CustomsPDFDocumentAsBase64"]
+    except Exception:
+        return result
     
     try:
         response = requests.get(endpoint, params=payload, headers=headers)
