@@ -1,6 +1,7 @@
 import os
+import json
 from dotenv import load_dotenv
-from fastapi import FastAPI, Request, HTTPException
+from fastapi import FastAPI, Request, HTTPException, Response
 import uvicorn
 from logs.logging_config import logger
 # from utils import save_to_backup
@@ -29,7 +30,12 @@ async def create_shipment_test(request: Request):
 
     token = headers.get("X-API-KEY")
     if token != AUTH_TOKEN:
-        raise HTTPException(status_code=401, detail={"Success": False, "ErrorMessages": "Unauthorized"})
+        response = Response(
+            content=json.dumps({"Success": False, "ErrorMessages": "Unauthorized"}),
+            status_code=401,
+            media_type="application/json"
+        )
+        return response
     
     try:
         payload = await request.json()
@@ -75,7 +81,12 @@ async def create_shipment(request: Request):
 
     token = headers.get("X-API-KEY")
     if token != AUTH_TOKEN:
-        raise HTTPException(status_code=401, detail={"Success": False, "ErrorMessages": "Unauthorized"})
+        response = Response(
+            content=json.dumps({"Success": False, "ErrorMessages": "Unauthorized"}),
+            status_code=401,
+            media_type="application/json"
+        )
+        return response
     
     try:
         payload = await request.json()
@@ -101,7 +112,12 @@ async def cancel_shipment_test(request: Request):
 
     token = headers.get("X-API-KEY")
     if token != AUTH_TOKEN:
-        raise HTTPException(status_code=401, detail={"Success": False, "ErrorMessages": "Unauthorized"})
+        response = Response(
+            content=json.dumps({"Success": False, "ErrorMessages": "Unauthorized"}),
+            status_code=401,
+            media_type="application/json"
+        )
+        return response
     
     try:
         payload = await request.json()
@@ -127,7 +143,12 @@ async def cancel_shipment(request: Request):
 
     token = headers.get("X-API-KEY")
     if token != AUTH_TOKEN:
-        raise HTTPException(status_code=401, detail={"Success": False, "ErrorMessages": "Unauthorized"})
+        response = Response(
+            content=json.dumps({"Success": False, "ErrorMessages": "Unauthorized"}),
+            status_code=401,
+            media_type="application/json"
+        )
+        return response
     
     try:
         payload = await request.json()
