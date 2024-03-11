@@ -13,6 +13,8 @@ AUTH_TOKEN = os.getenv("X_API_KEY")
 
 app = FastAPI()
 
+@app.on_event("startapp")
+
 
 @app.get("/")
 async def index():
