@@ -13,7 +13,7 @@ AUTH_TOKEN = os.getenv("X_API_KEY")
 
 app = FastAPI()
 
-@app.on_event("startapp")
+# @app.on_event("startapp")
 def startup_event():
     ...
 
