@@ -3,6 +3,7 @@ from logs.logging_config import logger
 import requests
 
 
+
 login_endpoint = "https://api.dpd.co.uk/user/?action=login"
 login_headers = {
     "Authorization": "Basic ZmFyZmlsbDpmYXJmaWxsQDEyMw==",
@@ -17,14 +18,17 @@ response.raise_for_status()
 login_data = response.json()["data"]
 geo_session = login_data["geoSession"]
 
-
-
 def create_shipment_view(payload):
+    with open("data/auth_data.json", "r") as file:
+        data = json.load(file)
+    geosession = data["geosession"]
+    auth_token = data["auth_token"]
+
     endpoint = "https://api.dpd.co.uk/shipping/network/"
     headers = {
-        "Authorization": "Basic ZmFyZmlsbDpmYXJmaWxsQDEyMw==",
+        "Authorization": auth_token,
         "Accept": "application/json",
-        "GeoSession": geo_session,
+        "GeoSession": geosession,
         "GeoClient": "account/118990"
     }
 
@@ -191,7 +195,6 @@ def create_shipment_view(payload):
     #     logger.error("send_dpd_request -- Error sending request to DPD API:", exc_info=True)
 
     return data
-
 
 def cancel_shipment_view(data):
     ...
