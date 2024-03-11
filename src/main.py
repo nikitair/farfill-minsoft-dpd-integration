@@ -17,15 +17,24 @@ app = FastAPI()
 def startup_event():
     ...
 
+# farfill.xyz/api/mintsoft
+# farfill.xyz/api/mintsoft/CreateShipment
+# farfill.xyz/api/mintsoft/CancelShipment
 
-@app.get("/")
+
+# farfill.xyz/api/mintsoft/test
+# farfill.xyz/api/mintsoft/test/CreateShipment
+# farfill.xyz/api/mintsoft/test/CancelShipment
+
+
+@app.get("/api/mintsoft")
 async def index():
     logger.info(f"{index.__name__} -- INDEX ENDPOINT TRIGGERED")
     return {"message": "Hello World!"}
 
 
 # @app.get("/api/Order/{id}/Shipments")
-@app.post("/api/test/Order/Shipments/CreateShipment")
+@app.post("api/mintsoft/test/CreateShipment")
 async def create_shipment_test(request: Request):
     logger.info(f"{create_shipment_test.__name__} -- CREATE SHIPMENT TEST ENDPOINT TRIGGERED")
 
@@ -56,7 +65,7 @@ async def create_shipment_test(request: Request):
         return response
 
 
-@app.post("/api/Order/Shipments/CreateShipment")
+@app.post("/api/mintsoft/CreateShipment")
 async def create_shipment(request: Request):
     logger.info(f"{create_shipment.__name__} -- CREATE SHIPMENT ENDPOINT TRIGGERED")
 
@@ -85,7 +94,7 @@ async def create_shipment(request: Request):
         return response
 
 
-@app.delete("/api/test/mintsoft/live/CancelShipment")
+@app.delete("/api/mintsoft/CancelShipment")
 async def cancel_shipment_test(request: Request):
     logger.info(f"{cancel_shipment.__name__} -- CANCEL SHIPMENT TEST ENDPOINT TRIGGERED")
 
@@ -115,7 +124,7 @@ async def cancel_shipment_test(request: Request):
         }
 
 
-@app.delete("/api/mintsoft/live/CancelShipment")
+@app.delete("/api/mintsoft/test/CancelShipment")
 async def cancel_shipment(request: Request):
     logger.info(f"{cancel_shipment.__name__} -- CANCEL SHIPMENT ENDPOINT TRIGGERED")
 
