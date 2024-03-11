@@ -17,6 +17,7 @@ def update_geosession():
 schedule.every().day.at("06:00").do(update_geosession)
 
 
-while True:
-    schedule.run_pending()
-    time.sleep(1)
+def run_geosession_processing():
+    while True:
+        schedule.run_pending()
+        time.sleep(1)
