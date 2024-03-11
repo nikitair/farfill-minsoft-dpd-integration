@@ -149,12 +149,13 @@ def create_shipment_view(payload):
     url = "http://api.dpd.co.uk/shipping/network/"
 
     # Параметри запиту
+
     params = {
-        "businessUnit": 0,
-        "deliveryDirection": 1,
-        "numberOfParcels": 1,
-        "shipmentType": 0,
-        "totalWeight": 1.0,
+        "businessUnit": "0",
+        "deliveryDirection": "1",
+        "numberOfParcels": "1",
+        "shipmentType": "0",
+        "totalWeight": "1.0",
         "deliveryDetails.address.countryCode": country_code,
         "deliveryDetails.address.countryName": "",
         "deliveryDetails.address.locality": "",
@@ -173,8 +174,7 @@ def create_shipment_view(payload):
         "collectionDetails.address.street": "",
         "collectionDetails.address.town": "",
         "collectionDetails.address.county": ""
-    }
-
+    }       
     headers = {
     "Accept": "application/json",
     "GeoClient": "account/118990",
