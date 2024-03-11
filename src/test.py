@@ -1,38 +1,84 @@
-import json
-from logs.logging_config import logger
 import requests
 
+def create_shipment_view(result):
+
+    login_endpoint = "https://api.dpd.co.uk/user/?action=login"
+    login_headers = {
+        "Authorization": "Basic ZmFyZmlsbDpmYXJmaWxsQDEyMw==",
+        "Content-Type": "application/json",
+        "Accept": "application/json"
+    }
+
+    response = requests.post(login_endpoint, headers=login_headers)
+    response.raise_for_status() 
 
 
-login_endpoint = "https://api.dpd.co.uk/user/?action=login"
-login_headers = {
-    "Authorization": "Basic ZmFyZmlsbDpmYXJmaWxsQDEyMw==",
-    "Content-Type": "application/json",
-    "Accept": "application/json"
-}
-
-response = requests.post(login_endpoint, headers=login_headers)
-response.raise_for_status()
-
-
-login_data = response.json()["data"]
-geo_session = login_data["geoSession"]
-
-def create_shipment_view(payload):
-    with open("data/auth_data.json", "r") as file:
-        data = json.load(file)
-    geosession = data["geosession"]
-    auth_token = data["auth_token"]
-
+    login_data = response.json()["data"]
+    geo_session = login_data["geoSession"]
     endpoint = "https://api.dpd.co.uk/shipping/network/"
     headers = {
-        "Authorization": auth_token,
+        "Authorization": "Basic ZmFyZmlsbDpmYXJmaWxsQDEyMw==",
         "Accept": "application/json",
-        "GeoSession": geosession,
+        "GeoSession": geo_session,
         "GeoClient": "account/118990"
     }
 
-    result = {
+
+    country_code = result["ShipFrom"]["CountryCode"]
+    post_code = result["ShipTo"]["PostCode"]
+
+
+
+    url = "https://api.dpd.co.uk/shipping/network/"
+    print(country_code)
+
+    params = {
+        "businessUnit": "0",
+        "deliveryDirection": "1",
+        "numberOfParcels": "1",
+        "shipmentType": "0",
+        "totalWeight": "1.0",
+        "deliveryDetails.address.countryCode": country_code,
+        "deliveryDetails.address.countryName": "",
+        "deliveryDetails.address.locality": "",
+        "deliveryDetails.address.organisation": "",
+        "deliveryDetails.address.postcode": post_code,
+        "deliveryDetails.address.property": "",
+        "deliveryDetails.address.street": "",
+        "deliveryDetails.address.town": "",
+        "deliveryDetails.address.county": "",
+        "collectionDetails.address.countryCode": country_code,
+        "collectionDetails.address.countryName": "",
+        "collectionDetails.address.locality": "",
+        "collectionDetails.address.organisation": "",
+        "collectionDetails.address.postcode": post_code,
+        "collectionDetails.address.property": "",
+        "collectionDetails.address.street": "",
+        "collectionDetails.address.town": "",
+        "collectionDetails.address.county": ""
+    }       
+    headers = {
+    "Authorization": "Basic ZmFyZmlsbDpmYXJmaWxsQDEyMw==",
+    "Accept": "application/json",
+    "GeoClient": "account/118990",
+    "GeoSession": geo_session
+    }
+    response = requests.get(url, params=params, headers=headers)
+
+    if response.status_code == 200:
+        data = response.json()
+    # try:
+    #     response = requests.get(endpoint, params=payload, headers=headers)
+    #     response.raise_for_status() 
+    # except requests.RequestException as e:
+    #     logger.error("send_dpd_request -- Error sending request to DPD API:", exc_info=True)
+
+    return data
+
+
+
+
+result = {
     "AccountNo": "an",
     "Password": "pw",
     "ShipmentId": "260692",
@@ -145,56 +191,6 @@ def create_shipment_view(payload):
     ]
 }
 
-    country_code = result["ShipFrom"]["CountryCode"]
-    post_code = result["ShipTo"]["PostCode"]
 
-
-
-    url = "https://api.dpd.co.uk/shipping/network/"
-
-
-    params = {
-        "businessUnit": "0",
-        "deliveryDirection": "1",
-        "numberOfParcels": "1",
-        "shipmentType": "0",
-        "totalWeight": "1.0",
-        "deliveryDetails.address.countryCode": country_code,
-        "deliveryDetails.address.countryName": "",
-        "deliveryDetails.address.locality": "",
-        "deliveryDetails.address.organisation": "",
-        "deliveryDetails.address.postcode": post_code,
-        "deliveryDetails.address.property": "",
-        "deliveryDetails.address.street": "",
-        "deliveryDetails.address.town": "",
-        "deliveryDetails.address.county": "",
-        "collectionDetails.address.countryCode": country_code,
-        "collectionDetails.address.countryName": "",
-        "collectionDetails.address.locality": "",
-        "collectionDetails.address.organisation": "",
-        "collectionDetails.address.postcode": post_code,
-        "collectionDetails.address.property": "",
-        "collectionDetails.address.street": "",
-        "collectionDetails.address.town": "",
-        "collectionDetails.address.county": ""
-    }       
-    headers = {
-    "Authorization": "Basic ZmFyZmlsbDpmYXJmaWxsQDEyMw==",
-    "Accept": "application/json",
-    "GeoClient": "account/118990",
-    "GeoSession": geo_session
-    }
-    response = requests.get(url, params=params, headers=headers)
-
-    if response.status_code == 200:
-        data = response.json()
-    # try:
-    #     response = requests.get(endpoint, params=payload, headers=headers)
-    #     response.raise_for_status() 
-    # except requests.RequestException as e:
-    #     logger.error("send_dpd_request -- Error sending request to DPD API:", exc_info=True)
-
-    return data
-
-def cancel_shipment_view(data):
-    ...
+test=create_shipment_view(result)
+print(test)
