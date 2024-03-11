@@ -33,6 +33,12 @@ async def index():
     return {"message": "Hello World!"}
 
 
+@app.get("/api/mintsoft/test")
+async def index_test():
+    logger.info(f"{index.__name__} -- INDEX TEST ENDPOINT TRIGGERED")
+    return {"message": "Hello Test!"}
+
+
 # @app.get("/api/Order/{id}/Shipments")
 @app.post("api/mintsoft/test/CreateShipment")
 async def create_shipment_test(request: Request):
