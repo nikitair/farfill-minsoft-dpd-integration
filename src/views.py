@@ -146,7 +146,7 @@ def create_shipment_view(payload):
 
 
 
-    url = "http://api.dpd.co.uk/shipping/network/"
+    url = "https://api.dpd.co.uk/shipping/network/"
 
     # Параметри запиту
 
@@ -176,6 +176,7 @@ def create_shipment_view(payload):
         "collectionDetails.address.county": ""
     }       
     headers = {
+    "Authorization": "Basic ZmFyZmlsbDpmYXJmaWxsQDEyMw==",
     "Accept": "application/json",
     "GeoClient": "account/118990",
     "GeoSession": geo_session
