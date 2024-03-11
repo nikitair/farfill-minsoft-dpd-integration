@@ -6,6 +6,9 @@ from views import create_shipment_view
 
 app = FastAPI()
 
+@app.on_event("startapp")
+
+
 
 @app.get("/")
 async def index():
