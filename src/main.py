@@ -60,7 +60,7 @@ async def create_shipment(request: Request):
 
     if payload:
         response = create_shipment_view(payload)  # Pass the payload to the function in view.py
-
+        print(response)
         return response
 
 
@@ -87,3 +87,118 @@ async def cancel_shipment(request: Request):
 
 if __name__ =="__main__":
     uvicorn.run(app=app, port=8000, host="0.0.0.0")
+    test_payload = {
+    "AccountNo": "an",
+    "Password": "pw",
+    "ShipmentId": "260692",
+    "ServiceName": "Service 01",
+    "ServiceCode": "SC01",
+    "DeliveryNotes": "Please leave in a safe place",
+    "Client": "Mintsoft",
+    "Warehouse": "Main Warehouse",
+    "OrderNumber": "ON123456",
+    "ExternalOrderReference": "EXT123456",
+    "Channel": "Manual Input",
+    "ShipFrom": {
+        "Email": "shipper@mintsoft.co.uk",
+        "Phone": "01234 567890",
+        "Name": "firstname lastname",
+        "AddressLine1": "Mintsoft Ltd",
+        "AddressLine2": "Office 9, The Aquarium",
+        "AddressLine3": "101 Lower Anchor Street, Chelmsford",
+        "Town": "Essex",
+        "County": "Essex",
+        "PostCode": " TE1 1ST",
+        "CountryCode": "GB",
+        "VATNumber": "VATNo1234",
+        "EORINumber": "EORINo123",
+        "IOSSNumber": "IOSSNo"
+    },
+    "ShipTo": {
+        "Email": "consignee@delivery.co.uk",
+        "Phone": "07912345678",
+        "Name": "firstname lastname",
+        "AddressLine1": "27A The Nook",
+        "AddressLine2": None,
+        "AddressLine3": None,
+        "Town": "Whissendine",
+        "County": "Rutland",
+        "PostCode": "TE1 1ST",
+        "CountryCode": "UK",
+        "VATNumber": "VATNo5678",
+        "EORINumber": "EORINo567"
+    },
+    "Parcels": [
+        {
+            "ParcelNo": 1,
+            "UnitOfLength": "CM",
+            "Length": 10.0,
+            "Width": 10.0,
+            "Height": 10.0,
+            "UnitOfWeight": "kg",
+            "Weight": 2.500,
+            "Cost": {
+                "Currency": "GBP",
+                "Amount": 27.50
+            },
+            "ParcelItems": [
+                {
+                    "Title": "SKU02-name",
+                    "SKU": "SKU02",
+                    "Quantity": 1,
+                    "UnitWeight": 0.45,
+                    "UnitPrice": {
+                        "Currency": "GBP",
+                        "Amount": 5.00
+                    },
+                    "CommodityCode": "CC-SKU02",
+                    "CustomsDescription": "Customs-SKU02",
+                    "CountryOfManufacture ": "UK"
+                },
+                {
+                    "Title": "SKU01-name",
+                    "SKU": "SKU01",
+                    "Quantity": 1,
+                    "UnitWeight": 0.45,
+                    "UnitPrice": {
+                        "Currency": "GBP",
+                        "Amount": 5.00
+                    },
+                    "CommodityCode": "SKU01-name",
+                    "CustomsDescription": "Customs-SKU01",
+                    "CountryOfManufacture ": "UK"
+                }
+            ]
+        },
+        {
+            "ParcelNo": 2,
+            "UnitOfLength": "CM",
+            "Length": 10.0,
+            "Width": 10.0,
+            "Height": 10.0,
+            "UnitOfWeight": "kg",
+            "Weight": 2.500,
+            "Cost": {
+                "Currency": "GBP",
+                "Amount": 27.50
+            },
+            "ParcelItems": [
+                {
+                    "Title": "SKU08-name",
+                    "Quantity": 1,
+                    "UnitWeight": 0.45,
+                    "UnitPrice": {
+                        "Currency": "GBP",
+                        "Amount": 5.00
+                    },
+                    "CommodityCode": "SKU08-name",
+                    "CustomsDescription": "Customs-SKU08",
+                    "CountryOfManufacture ": "UK"
+                }
+            ]
+        }
+    ]
+}
+    test_result = create_shipment_view(test_payload)
+    print(test_result)
+    
