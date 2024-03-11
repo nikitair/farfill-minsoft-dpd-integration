@@ -16,7 +16,6 @@ app = FastAPI()
 @app.on_event("startapp")
 
 
-
 @app.get("/")
 async def index():
     logger.info(f"{index.__name__} -- INDEX ENDPOINT TRIGGERED")
