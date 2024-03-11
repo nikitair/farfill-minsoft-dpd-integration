@@ -27,6 +27,8 @@ async def index():
 async def create_shipment_test(request: Request):
     logger.info(f"{create_shipment_test.__name__} -- CREATE SHIPMENT TEST ENDPOINT TRIGGERED")
 
+    logger.info(f"{create_shipment.__name__} -- CREATE SHIPMENT ENDPOINT TRIGGERED")
+
     payload = None
     headers = request.headers
 
@@ -38,40 +40,18 @@ async def create_shipment_test(request: Request):
             media_type="application/json"
         )
         return response
-    
+
     try:
         payload = await request.json()
-        logger.info(f"{create_shipment_test.__name__} -- RECEIVED PAYLOAD - {payload}")
+        logger.info(f"{create_shipment.__name__} -- RECEIVED PAYLOAD - {payload}")
     except Exception:
-        logger.exception(f"{create_shipment_test.__name__} -- ! BAD PAYLOAD ERROR")
+        logger.exception(f"{create_shipment.__name__} -- ! BAD PAYLOAD ERROR")
         raise HTTPException(status_code=422, detail={"message": "Unprocessable Payload"})
 
-    return {
-        "Success": True,
-        "ErrorMessages": None,
-        "Shipment": {
-        "MainTrackingNumber": "TrackingNumber01",
-        "LabelFormat": "PNG",
-        "CustomsDocumentFormat": "PDF",
-        "Packages": [
-        {
-        "TrackingNumber": "TrackingNumber01",
-        "TrackingUrl": None,
-        "ParcelNo": 1,
-        "LabelAsBase64": "",
-        "CustomsDocumentName": "",
-        "CustomsPDFDocumentAsBase64": ""
-        },
-        {
-        "TrackingNumber": "TrackingNumber02",
-        "TrackingUrl": None,
-        "ParcelNo": 3,
-        "LabelAsBase64": "LabelAsBase64.....",
-        "CustomsDocumentName": "CN22",
-        "CustomsPDFDocumentAsBase64": "CustomsPDFDocumentAsBase64...."
-        }
-        ]
-        }}
+    if payload:
+        response = create_shipment_view(payload)  # Pass the payload to the function in view.py
+
+        return response
 
 
 @app.post("/api/Order/Shipments/CreateShipment")
