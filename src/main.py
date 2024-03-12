@@ -86,6 +86,10 @@ async def cancel_shipment(request: Request):
 
 
 if __name__ =="__main__":
+    # uvicorn.run(app=app, port=8000, host="0.0.0.0")
     uvicorn.run(app=app, port=8000, host="0.0.0.0")
+    
+    post_shipm = create_shipment_view('')
+    print(post_shipm)
 
     

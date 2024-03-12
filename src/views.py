@@ -1,6 +1,9 @@
+import base64
+from io import BytesIO
 import json
-from logs.logging_config import logger
 import requests
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
 
 
 login_endpoint = "https://api.dpd.co.uk/user/?action=login"
@@ -14,17 +17,16 @@ response = requests.post(login_endpoint, headers=login_headers)
 response.raise_for_status()
 
 
-login_data = response.json()["data"]
-geo_session = login_data["geoSession"]
+geo_session = response.json()["data"]["geoSession"] 
 
 
 
-def create_shipment_view(payload):
+def create_shipment_view(result):
     endpoint = "https://api.dpd.co.uk/shipping/network/"
     headers = {
         "Authorization": "Basic ZmFyZmlsbDpmYXJmaWxsQDEyMw==",
         "Accept": "application/json",
-        "GeoSession": geo_session,
+        "GeoSession": "f8a29d27-c2c6-4c11-afda-9177fcb22290",
         "GeoClient": "account/118990"
     }
 
@@ -64,134 +66,280 @@ def create_shipment_view(payload):
         "AddressLine3": None,
         "Town": "Whissendine",
         "County": "Rutland",
-        "PostCode": "TE1 1ST",
-        "CountryCode": "UK",
+        "PostCode": "75000",
+        "CountryCode": "FR",
         "VATNumber": "VATNo5678",
         "EORINumber": "EORINo567"
     },
     "Parcels": [
-        {
-            "ParcelNo": 1,
-            "UnitOfLength": "CM",
-            "Length": 10.0,
-            "Width": 10.0,
-            "Height": 10.0,
-            "UnitOfWeight": "kg",
-            "Weight": 2.500,
-            "Cost": {
-                "Currency": "GBP",
-                "Amount": 27.50
-            },
-            "ParcelItems": [
                 {
-                    "Title": "SKU02-name",
-                    "SKU": "SKU02",
-                    "Quantity": 1,
-                    "UnitWeight": 0.45,
-                    "UnitPrice": {
+                    "ParcelNo": 1,
+                    "UnitOfLength": "CM",
+                    "Length": 10.0,
+                    "Width": 10.0,
+                    "Height": 10.0,
+                    "UnitOfWeight": "kg",
+                    "Weight": 2.500,
+                    "Cost": {
                         "Currency": "GBP",
-                        "Amount": 5.00
-                    },
-                    "CommodityCode": "CC-SKU02",
-                    "CustomsDescription": "Customs-SKU02",
-                    "CountryOfManufacture ": "UK"
+                        "Amount": 27.50
+                        },
+                    "ParcelItems": [
+                        {
+                            "Title": "SKU02-name",
+                            "SKU": "CC0002-002-M",
+                            "Quantity": 1,
+                            "UnitWeight": 0.45,
+                            "UnitPrice": {
+                                "Currency": "GBP",
+                                "Amount": 5.00
+                            },
+                            "CommodityCode": "61052010",
+                            "CustomsDescription": "Customs-SKU02",
+                            "CountryOfManufacture ": "UNITED KINGDOM"
+                        },
+                        {
+                            "Title": "SKU01-name",
+                            "SKU": "CC0003-003-M",
+                            "Quantity": 1,
+                            "UnitWeight": 0.45,
+                            "UnitPrice": {
+                                "Currency": "GBP",
+                                "Amount": 5.00
+                            },
+                            "CommodityCode": "61052010",
+                            "CustomsDescription": "Customs-SKU01",
+                            "CountryOfManufacture ": "UNITED KINGDOM"
+                        }
+                    ]
                 },
                 {
-                    "Title": "SKU01-name",
-                    "SKU": "SKU01",
-                    "Quantity": 1,
-                    "UnitWeight": 0.45,
-                    "UnitPrice": {
+                    "ParcelNo": 2,
+                    "UnitOfLength": "CM",
+                    "Length": 10.0,
+                    "Width": 10.0,
+                    "Height": 10.0,
+                    "UnitOfWeight": "kg",
+                    "Weight": 2.500,
+                    "Cost": {
                         "Currency": "GBP",
-                        "Amount": 5.00
+                        "Amount": 27.50
                     },
-                    "CommodityCode": "SKU01-name",
-                    "CustomsDescription": "Customs-SKU01",
-                    "CountryOfManufacture ": "UK"
+                    "ParcelItems": [
+                        {
+                            "Title": "SKU08-name",
+                            "Quantity": 1,
+                            "UnitWeight": 0.45,
+                            "UnitPrice": {
+                                "Currency": "GBP",
+                                "Amount": 5.00
+                            },
+                            "CommodityCode": "SKU08-name",
+                            "CustomsDescription": "Customs-SKU08",
+                            "CountryOfManufacture ": "UK"
+                        }
+                    ]
                 }
             ]
-        },
+}
+
+    # account_no = result["AccountNo"]
+    # password = result["Password"]
+    # shipment_id = result["ShipmentId"]
+    # service_name = result["ServiceName"]
+    # service_code = result["ServiceCode"]
+    # delivery_notes = result["DeliveryNotes"]
+    # client = result["Client"]
+    # warehouse = result["Warehouse"]
+    # order_number = result["OrderNumber"]
+    # external_order_reference = result["ExternalOrderReference"]
+    # channel = result["Channel"]
+
+    # ship_from_email = result["ShipFrom"]["Email"]
+    ship_from_phone = result["ShipFrom"]["Phone"]
+    ship_from_name = result["ShipFrom"]["Name"]
+    ship_from_address1 = result["ShipFrom"]["AddressLine1"]
+    ship_from_address2 = result["ShipFrom"]["AddressLine2"]
+    # ship_from_address3 = result["ShipFrom"]["AddressLine3"]
+    ship_from_town = result["ShipFrom"]["Town"]
+    ship_from_county = result["ShipFrom"]["County"]
+    ship_from_postcode = result["ShipFrom"]["PostCode"]
+    ship_from_country_code = result["ShipFrom"]["CountryCode"]
+    # ship_from_vat_number = result["ShipFrom"]["VATNumber"]
+    # ship_from_eori_number = result["ShipFrom"]["EORINumber"]
+    # ship_from_ioss_number = result["ShipFrom"]["IOSSNumber"]
+
+    ship_to_email = result["ShipTo"]["Email"]
+    ship_to_phone = result["ShipTo"]["Phone"]
+    ship_to_name = result["ShipTo"]["Name"]
+    ship_to_address1 = result["ShipTo"]["AddressLine1"]
+    ship_to_address2 = result["ShipTo"]["AddressLine2"]
+    # ship_to_address3 = result["ShipTo"]["AddressLine3"]
+    ship_to_town = result["ShipTo"]["Town"]
+    ship_to_county = result["ShipTo"]["County"]
+    ship_to_postcode = result["ShipTo"]["PostCode"]
+    ship_to_country_code = result["ShipTo"]["CountryCode"]
+    # ship_to_vat_number = result["ShipTo"]["VATNumber"]
+    # ship_to_eori_number = result["ShipTo"]["EORINumber"]
+
+    parcels_count = len(result["Parcels"])
+    parcels = result["Parcels"]
+    total_weight = sum(parcel["Weight"] for parcel in result["Parcels"])
+
+    payload = {
+    "jobId": None,
+    "collectionOnDelivery": False,
+    "collectionDate": "2024-03-12T09:00:00",
+    "consolidate": False,
+    "consignment": [
         {
-            "ParcelNo": 2,
-            "UnitOfLength": "CM",
-            "Length": 10.0,
-            "Width": 10.0,
-            "Height": 10.0,
-            "UnitOfWeight": "kg",
-            "Weight": 2.500,
-            "Cost": {
-                "Currency": "GBP",
-                "Amount": 27.50
-            },
-            "ParcelItems": [
-                {
-                    "Title": "SKU08-name",
-                    "Quantity": 1,
-                    "UnitWeight": 0.45,
-                    "UnitPrice": {
-                        "Currency": "GBP",
-                        "Amount": 5.00
-                    },
-                    "CommodityCode": "SKU08-name",
-                    "CustomsDescription": "Customs-SKU08",
-                    "CountryOfManufacture ": "UK"
+            "consignmentNumber": None,
+            "consignmentRef": None,
+            "parcel": parcels,
+            "collectionDetails": {
+                "contactDetails": {
+                    "contactName": ship_from_name,
+                    "telephone": ship_from_phone
+                },
+                "address": {
+                    "organisation": "",
+                    "countryCode": ship_from_country_code,
+                    "postcode": ship_from_postcode,
+                    "street": ship_from_address1,
+                    "locality": ship_from_address2,
+                    "town": ship_from_town,
+                    "county": ship_from_county
                 }
-            ]
+            },
+            "deliveryDetails": {
+                "contactDetails": {
+                    "contactName": ship_to_name,
+                    "telephone": ship_to_phone
+                },
+                "address": {
+                    "organisation": "",
+                    "countryCode": ship_to_country_code,
+                    "postcode": ship_to_postcode,
+                    "street": ship_to_address1,
+                    "locality": ship_to_address2,
+                    "town": ship_to_town,
+                    "county": ship_to_county
+                    },
+                "notificationDetails": {
+                    "email": ship_to_email,
+                    "mobile": ship_to_phone
+                }
+            },
+            "returnDetails": {
+                "contactDetails": {
+                    "contactName": ship_to_name,
+                    "telephone": ship_to_phone,
+                    "email": ship_to_email,
+                },
+                "address": {
+                    "organisation": "",
+                    "countryCode": ship_to_country_code,
+                    "postcode": ship_to_postcode,
+                    "street": ship_to_address1,
+                    "locality": ship_to_address2,
+                    "town": ship_to_town,
+                    "county": ship_to_county
+                }
+            },
+            "networkCode": "1^19",
+            "numberOfParcels": parcels_count,
+            "totalWeight": total_weight,
+            "shippingRef1": "shippingRef1",
+            "shippingRef2": "shippingRef2",
+            "shippingRef3": "shippingRef3",
+            "customsValue": 15,
+            "deliveryInstructions": "Delivery Instructions",
+            "parcelDescription": "Women’s Dress",
+            "liabilityValue": None,
+            "liability": False,
+            "preCleared": True
         }
     ]
 }
+    payload_parses = payload["consignment"]["parcel"]
 
-    country_code = result["ShipFrom"]["CountryCode"]
-    post_code = result["ShipTo"]["PostCode"]
-
-
-
-    url = "https://api.dpd.co.uk/shipping/network/"
-
-
-    params = {
-        "businessUnit": "0",
-        "deliveryDirection": "1",
-        "numberOfParcels": "1",
-        "shipmentType": "0",
-        "totalWeight": "1.0",
-        "deliveryDetails.address.countryCode": country_code,
-        "deliveryDetails.address.countryName": "",
-        "deliveryDetails.address.locality": "",
-        "deliveryDetails.address.organisation": "",
-        "deliveryDetails.address.postcode": post_code,
-        "deliveryDetails.address.property": "",
-        "deliveryDetails.address.street": "",
-        "deliveryDetails.address.town": "",
-        "deliveryDetails.address.county": "",
-        "collectionDetails.address.countryCode": country_code,
-        "collectionDetails.address.countryName": "",
-        "collectionDetails.address.locality": "",
-        "collectionDetails.address.organisation": "",
-        "collectionDetails.address.postcode": post_code,
-        "collectionDetails.address.property": "",
-        "collectionDetails.address.street": "",
-        "collectionDetails.address.town": "",
-        "collectionDetails.address.county": ""
-    }       
+    url = "https://api.dpd.co.uk/shipping/shipment"
+    params = {"test": "true"}
     headers = {
-    "Authorization": "Basic ZmFyZmlsbDpmYXJmaWxsQDEyMw==",
+    "Content-Type": "application/json",
     "Accept": "application/json",
     "GeoClient": "account/118990",
     "GeoSession": geo_session
     }
-    response = requests.get(url, params=params, headers=headers)
 
-    if response.status_code == 200:
-        data = response.json()
-    # try:
-    #     response = requests.get(endpoint, params=payload, headers=headers)
-    #     response.raise_for_status() 
-    # except requests.RequestException as e:
-    #     logger.error("send_dpd_request -- Error sending request to DPD API:", exc_info=True)
-
-    return data
+    response = requests.post(url, json=payload, headers=headers)
 
 
-def cancel_shipment_view(data):
-    ...
+    data = response.json()
+
+    response_text = get_label(data)
+    send_mintsoft = send_to_mintsoft(response_text)
+
+    return send_mintsoft
+
+
+def get_label(data):
+    shipment_id = data['data']['shipmentId']
+    label_endpoint = f"https://api.dpd.co.uk/shipping/shipment/1125991484/label/"
+    label_headers = {
+        
+        "Accept": "text/vnd.eltron-epl",
+        "GeoSession": "f8a29d27-c2c6-4c11-afda-9177fcb22290",
+        "GeoClient": "account/118990"
+    }
+
+    response = requests.get(label_endpoint, headers=label_headers)
+    response_text = response.text
+   
+    return response_text
+
+def send_to_mintsoft(response_text):
+    pdf_buffer = BytesIO()
+    pdf_canvas = canvas.Canvas(pdf_buffer, pagesize=letter)
+
+
+    lines = response_text.split('\n')
+    y_position = 800  
+    for line in lines:
+        pdf_canvas.drawString(100, y_position, line)
+        y_position -= 15  
+
+    pdf_canvas.save()
+
+
+    pdf_buffer.seek(0)
+    CustomsPDFDocumentAsBase64 = base64.b64encode(pdf_buffer.read()).decode('utf-8')
+
+    original_bytes = response_text.encode('utf-8')
+    LabelAsBase64 = base64.b64encode(original_bytes).decode('utf-8')
+
+
+    dpd_to_mintsoft_response={
+        "Success": True,
+        "ErrorMessages": None,
+        "Shipment": {
+            "MainTrackingNumber": "TrackingNumber01",
+            "LabelFormat": "PNG",
+            "CustomsDocumentFormat": "PDF",
+            "Packages": [
+                {
+                "TrackingNumber": "TrackingNumber01",
+                "TrackingUrl": None,
+                "ParcelNo": 1,
+                "LabelAsBase64": LabelAsBase64,
+                "CustomsDocumentName": "CN22",
+                "CustomsPDFDocumentAsBase64": CustomsPDFDocumentAsBase64
+                }
+            ]
+        }
+    }
+    return dpd_to_mintsoft_response
+
+
+final = create_shipment_view('')
+print(final)
