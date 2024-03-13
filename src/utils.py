@@ -48,10 +48,10 @@ async def backup_request(request: Request, response):
     }
 
     try:
-        result["ip"] = request.client.host
-        result["url"] = request.url
-        result["base_url"] = request.base_url
-        result["headers"] = request.headers
+        result["ip"] = str(request.client.host)
+        result["url"] = str(request.url)
+        result["base_url"] = str(request.base_url)
+        result["headers"] = dict(request.headers)
         result["request"] = await request.json()
     except Exception:
         logger.exception(f"{backup_request.__name__} -- !!! ERROR PARSING REQUEST")
