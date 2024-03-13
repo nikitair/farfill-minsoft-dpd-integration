@@ -58,8 +58,6 @@ async def index_test(request: Request):
 async def create_shipment_test(request: Request):
     logger.info(f"{create_shipment_test.__name__} -- CREATE SHIPMENT TEST ENDPOINT TRIGGERED")
 
-    logger.info(f"{create_shipment.__name__} -- CREATE SHIPMENT ENDPOINT TRIGGERED")
-
     payload = None
     headers = request.headers
 
@@ -74,10 +72,16 @@ async def create_shipment_test(request: Request):
 
     try:
         payload = await request.json()
-        logger.info(f"{create_shipment.__name__} -- RECEIVED PAYLOAD - {payload}")
+        logger.info(f"{create_shipment_test.__name__} -- RECEIVED PAYLOAD - {payload}")
     except Exception:
-        logger.exception(f"{create_shipment.__name__} -- ! BAD PAYLOAD ERROR")
-        raise HTTPException(status_code=422, detail={"message": "Unprocessable Payload"})
+        logger.exception(f"{create_shipment_test.__name__} -- ! BAD PAYLOAD ERROR")
+        response = Response(
+            content=json.dumps({"Success": False, "ErrorMessages": "Bad Payload"}),
+            status_code=422,
+            media_type="application/json"
+        )
+        backup_request(request, response)
+        return response
 
     if payload:
         response = create_shipment_view(payload)  # Pass the payload to the function in view.py
@@ -108,7 +112,13 @@ async def create_shipment(request: Request):
         logger.info(f"{create_shipment.__name__} -- RECEIVED PAYLOAD - {payload}")
     except Exception:
         logger.exception(f"{create_shipment.__name__} -- ! BAD PAYLOAD ERROR")
-        raise HTTPException(status_code=422, detail={"message": "Unprocessable Payload"})
+        response = Response(
+            content=json.dumps({"Success": False, "ErrorMessages": "Bad Payload"}),
+            status_code=422,
+            media_type="application/json"
+        )
+        backup_request(request, response)
+        return response
 
     if payload:
         response = create_shipment_view(payload)  # Pass the payload to the function in view.py
@@ -119,9 +129,9 @@ async def create_shipment(request: Request):
 
 
 
-@app.delete("/api/mintsoft/CancelShipment")
+@app.delete("/api/mintsoft/test/CancelShipment")
 async def cancel_shipment_test(request: Request):
-    logger.info(f"{cancel_shipment.__name__} -- CANCEL SHIPMENT TEST ENDPOINT TRIGGERED")
+    logger.info(f"{cancel_shipment_test.__name__} -- CANCEL SHIPMENT TEST ENDPOINT TRIGGERED")
 
     payload = None
     headers = request.headers
@@ -133,6 +143,10 @@ async def cancel_shipment_test(request: Request):
             status_code=401,
             media_type="application/json"
         )
+        logger.warning(f"{cancel_shipment_test.__name__} -- ! UNAUTHORIZED REQUEST")
+
+        backup_request(request, response)
+
         return response
     
     try:
@@ -140,7 +154,13 @@ async def cancel_shipment_test(request: Request):
         logger.info(f"{cancel_shipment_test.__name__} -- RECEIVED PAYLOAD - {payload}")
     except Exception:
         logger.exception(f"{cancel_shipment_test.__name__} -- ! BAD PAYLOAD ERROR")
-        raise HTTPException(status_code=422, detail={"message": "Unprocessable Payload"})
+        response = Response(
+            content=json.dumps({"Success": False, "ErrorMessages": "Bad Payload"}),
+            status_code=422,
+            media_type="application/json"
+        )
+        backup_request(request, response)
+        return response
     
     response = {
         "Success": True,
@@ -151,7 +171,7 @@ async def cancel_shipment_test(request: Request):
     return response
 
 
-@app.delete("/api/mintsoft/test/CancelShipment")
+@app.delete("/api/mintsoft/CancelShipment")
 async def cancel_shipment(request: Request):
     logger.info(f"{cancel_shipment.__name__} -- CANCEL SHIPMENT ENDPOINT TRIGGERED")
 
@@ -165,6 +185,10 @@ async def cancel_shipment(request: Request):
             status_code=401,
             media_type="application/json"
         )
+        logger.warning(f"{cancel_shipment.__name__} -- ! UNAUTHORIZED REQUEST")
+
+        backup_request(request, response)
+
         return response
     
     try:
@@ -172,9 +196,14 @@ async def cancel_shipment(request: Request):
         logger.info(f"{cancel_shipment.__name__} -- RECEIVED PAYLOAD - {payload}")
     except Exception:
         logger.exception(f"{cancel_shipment.__name__} -- ! BAD PAYLOAD ERROR")
-        raise HTTPException(status_code=422, detail={"message": "Unprocessable Payload"})
+        response = Response(
+            content=json.dumps({"Success": False, "ErrorMessages": "Bad Payload"}),
+            status_code=422,
+            media_type="application/json"
+        )
+        backup_request(request, response)
+        return response
     
-
     response = {
         "Success": True,
         "ErrorMessages": [ "Already Shipped", "Another message" ]
@@ -185,7 +214,6 @@ async def cancel_shipment(request: Request):
 
 
 if __name__ =="__main__":
-
     uvicorn.run(app=app, port=8000, host="0.0.0.0")
 
 
