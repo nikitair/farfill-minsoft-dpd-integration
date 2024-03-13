@@ -1,21 +1,29 @@
 import os
 import json
 from dotenv import load_dotenv
+from datetime import timedelta
+from celery import Celery
 from fastapi import FastAPI, Request, HTTPException, Response
 import uvicorn
 from logs.logging_config import logger
-from utils import save_to_backup
-# from schemas import CreateShipmentRequest, CancelShipmentRequest
+from utils import backup_request
 from views import create_shipment_view
+
 
 load_dotenv()
 AUTH_TOKEN = os.getenv("X_API_KEY")
 
-app = FastAPI()
 
-# @app.on_event("startapp")
-def startup_event():
-    ...
+app = FastAPI()
+celery_app = Celery("tasks", broker="redis://localhost:6379/0")
+
+
+celery_app.conf.beat_schedule = {
+    "update-geosession-daily": {
+        "task": "update_geosession",
+        "schedule": timedelta(days=1),
+    },
+}
 
 # farfill.xyz/api/mintsoft
 # farfill.xyz/api/mintsoft/CreateShipment
@@ -31,13 +39,18 @@ def startup_event():
 async def index(request: Request):
     logger.info(f"{index.__name__} -- INDEX ENDPOINT TRIGGERED")
     response = {"message": "Hello World!"}
+
+    backup_request(request, response)
     return response
 
 
 @app.get("/api/mintsoft/test")
 async def index_test(request: Request):
     logger.info(f"{index.__name__} -- INDEX TEST ENDPOINT TRIGGERED")
-    return {"message": "Hello Test!"}
+    response = {"message": "Hello Test!"}
+
+    backup_request(request, response)
+    return response
 
 
 # @app.get("/api/Order/{id}/Shipments")
@@ -69,6 +82,8 @@ async def create_shipment_test(request: Request):
     if payload:
         response = create_shipment_view(payload)  # Pass the payload to the function in view.py
 
+        backup_request(request, response)
+
         return response
 
 
@@ -97,6 +112,9 @@ async def create_shipment(request: Request):
 
     if payload:
         response = create_shipment_view(payload)  # Pass the payload to the function in view.py
+
+        backup_request(request, response)
+
         return response
 
 
@@ -124,11 +142,13 @@ async def cancel_shipment_test(request: Request):
         logger.exception(f"{cancel_shipment_test.__name__} -- ! BAD PAYLOAD ERROR")
         raise HTTPException(status_code=422, detail={"message": "Unprocessable Payload"})
     
-
-    return {
+    response = {
         "Success": True,
         "ErrorMessages": [ "Already Shipped", "Another message" ]
         }
+
+    backup_request(request, response)
+    return response
 
 
 @app.delete("/api/mintsoft/test/CancelShipment")
@@ -155,10 +175,13 @@ async def cancel_shipment(request: Request):
         raise HTTPException(status_code=422, detail={"message": "Unprocessable Payload"})
     
 
-    return {
+    response = {
         "Success": True,
-        "ErrorMessages": ["Already Shipped", "Another message"]
+        "ErrorMessages": [ "Already Shipped", "Another message" ]
         }
+
+    backup_request(request, response)
+    return response
 
 
 if __name__ =="__main__":

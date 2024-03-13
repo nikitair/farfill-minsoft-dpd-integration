@@ -39,6 +39,8 @@ def backup_request(request: Request, response):
 
     result = {
         "ip": None,
+        "url": None,
+        "base_url": None,
         "headers": None,
         "request": None,
         "response": response,
@@ -47,6 +49,8 @@ def backup_request(request: Request, response):
 
     try:
         result["ip"] = request.client.host
+        result["url"] = request.url
+        result["base_url"] = request.base_url
         result["headers"] = request.headers
         result["request"] = request.json()
     except Exception:
