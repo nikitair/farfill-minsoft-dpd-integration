@@ -40,7 +40,7 @@ async def index(request: Request):
     logger.info(f"{index.__name__} -- INDEX ENDPOINT TRIGGERED")
     response = {"message": "Hello World!"}
 
-    backup_request(request, response)
+    await backup_request(request, response)
     return response
 
 
@@ -49,7 +49,7 @@ async def index_test(request: Request):
     logger.info(f"{index.__name__} -- INDEX TEST ENDPOINT TRIGGERED")
     response = {"message": "Hello Test!"}
 
-    backup_request(request, response)
+    await backup_request(request, response)
     return response
 
 
@@ -80,13 +80,13 @@ async def create_shipment_test(request: Request):
             status_code=422,
             media_type="application/json"
         )
-        backup_request(request, response)
+        await backup_request(request, response)
         return response
 
     if payload:
         response = create_shipment_view(payload)  # Pass the payload to the function in view.py
 
-        backup_request(request, response)
+        await backup_request(request, response)
 
         return response
 
@@ -117,13 +117,13 @@ async def create_shipment(request: Request):
             status_code=422,
             media_type="application/json"
         )
-        backup_request(request, response)
+        await backup_request(request, response)
         return response
 
     if payload:
         response = create_shipment_view(payload)  # Pass the payload to the function in view.py
 
-        backup_request(request, response)
+        await backup_request(request, response)
 
         return response
 
@@ -145,7 +145,7 @@ async def cancel_shipment_test(request: Request):
         )
         logger.warning(f"{cancel_shipment_test.__name__} -- ! UNAUTHORIZED REQUEST")
 
-        backup_request(request, response)
+        await backup_request(request, response)
 
         return response
     
@@ -159,7 +159,7 @@ async def cancel_shipment_test(request: Request):
             status_code=422,
             media_type="application/json"
         )
-        backup_request(request, response)
+        await backup_request(request, response)
         return response
     
     response = {
@@ -167,7 +167,7 @@ async def cancel_shipment_test(request: Request):
         "ErrorMessages": [ "Already Shipped", "Another message" ]
         }
 
-    backup_request(request, response)
+    await backup_request(request, response)
     return response
 
 
@@ -187,7 +187,7 @@ async def cancel_shipment(request: Request):
         )
         logger.warning(f"{cancel_shipment.__name__} -- ! UNAUTHORIZED REQUEST")
 
-        backup_request(request, response)
+        await backup_request(request, response)
 
         return response
     
@@ -201,7 +201,7 @@ async def cancel_shipment(request: Request):
             status_code=422,
             media_type="application/json"
         )
-        backup_request(request, response)
+        await backup_request(request, response)
         return response
     
     response = {
@@ -209,7 +209,7 @@ async def cancel_shipment(request: Request):
         "ErrorMessages": [ "Already Shipped", "Another message" ]
         }
 
-    backup_request(request, response)
+    await backup_request(request, response)
     return response
 
 

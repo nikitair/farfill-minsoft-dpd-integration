@@ -23,7 +23,7 @@ def retrieve_geosession_token(api_key):
         response.raise_for_status()
 
 
-def backup_request(request: Request, response):
+async def backup_request(request: Request, response):
     logger.info(f"{backup_request.__name__} -- BACKING UP REQUEST")
 
     all_backups = []
@@ -52,7 +52,7 @@ def backup_request(request: Request, response):
         result["url"] = request.url
         result["base_url"] = request.base_url
         result["headers"] = request.headers
-        result["request"] = request.json()
+        result["request"] = await request.json()
     except Exception:
         logger.exception(f"{backup_request.__name__} -- !!! ERROR PARSING REQUEST")
 
