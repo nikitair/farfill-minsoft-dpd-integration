@@ -62,11 +62,13 @@ async def create_shipment_test(request: Request):
 
     token = headers.get("X-API-KEY")
     if token != AUTH_TOKEN:
+        response_data = {"Success": False, "ErrorMessages": "Unauthorized"}
         response = Response(
-            content=json.dumps({"Success": False, "ErrorMessages": "Unauthorized"}),
+            content=json.dumps(response_data),
             status_code=401,
             media_type="application/json"
         )
+        await backup_request(request, response)
         return response
 
     try:
@@ -74,12 +76,13 @@ async def create_shipment_test(request: Request):
         logger.info(f"{create_shipment_test.__name__} -- RECEIVED PAYLOAD - {payload}")
     except Exception:
         logger.exception(f"{create_shipment_test.__name__} -- ! BAD PAYLOAD ERROR")
+        response_data = {"Success": False, "ErrorMessages": "Bad Payload"}
         response = Response(
-            content=json.dumps({"Success": False, "ErrorMessages": "Bad Payload"}),
+            content=json.dumps(response_data),
             status_code=422,
             media_type="application/json"
         )
-        await backup_request(request, dict(response))
+        await backup_request(request, response)
         return response
 
     if payload:
@@ -99,11 +102,13 @@ async def create_shipment(request: Request):
 
     token = headers.get("X-API-KEY")
     if token != AUTH_TOKEN:
+        response_data = {"Success": False, "ErrorMessages": "Unauthorized"}
         response = Response(
-            content=json.dumps({"Success": False, "ErrorMessages": "Unauthorized"}),
+            content=json.dumps(response_data),
             status_code=401,
             media_type="application/json"
         )
+        await backup_request(request, response)
         return response
 
     try:
@@ -111,12 +116,13 @@ async def create_shipment(request: Request):
         logger.info(f"{create_shipment.__name__} -- RECEIVED PAYLOAD - {payload}")
     except Exception:
         logger.exception(f"{create_shipment.__name__} -- ! BAD PAYLOAD ERROR")
+        response_data = {"Success": False, "ErrorMessages": "Bad Payload"}
         response = Response(
-            content=json.dumps({"Success": False, "ErrorMessages": "Bad Payload"}),
+            content=json.dumps(response_data),
             status_code=422,
             media_type="application/json"
         )
-        await backup_request(request, dict(response))
+        await backup_request(request, response)
         return response
 
     if payload:
@@ -137,8 +143,9 @@ async def cancel_shipment_test(request: Request):
 
     token = headers.get("X-API-KEY")
     if token != AUTH_TOKEN:
+        response_data = {"Success": False, "ErrorMessages": "Unauthorized"}
         response = Response(
-            content=json.dumps({"Success": False, "ErrorMessages": "Unauthorized"}),
+            content=json.dumps(response_data),
             status_code=401,
             media_type="application/json"
         )
@@ -153,12 +160,13 @@ async def cancel_shipment_test(request: Request):
         logger.info(f"{cancel_shipment_test.__name__} -- RECEIVED PAYLOAD - {payload}")
     except Exception:
         logger.exception(f"{cancel_shipment_test.__name__} -- ! BAD PAYLOAD ERROR")
+        response_data = {"Success": False, "ErrorMessages": "Bad Payload"}
         response = Response(
-            content=json.dumps({"Success": False, "ErrorMessages": "Bad Payload"}),
+            content=json.dumps(response_data),
             status_code=422,
             media_type="application/json"
         )
-        await backup_request(request, dict(response))
+        await backup_request(request, response)
         return response
     
     response = {
@@ -179,15 +187,15 @@ async def cancel_shipment(request: Request):
 
     token = headers.get("X-API-KEY")
     if token != AUTH_TOKEN:
+        response_data = {"Success": False, "ErrorMessages": "Unauthorized"}
         response = Response(
-            content=json.dumps({"Success": False, "ErrorMessages": "Unauthorized"}),
+            content=json.dumps(response_data),
             status_code=401,
             media_type="application/json"
         )
-
         logger.warning(f"{cancel_shipment.__name__} -- ! UNAUTHORIZED REQUEST")
 
-        await backup_request(request, response.__repr__())
+        await backup_request(request, response)
 
         return response
     
@@ -196,12 +204,13 @@ async def cancel_shipment(request: Request):
         logger.info(f"{cancel_shipment.__name__} -- RECEIVED PAYLOAD - {payload}")
     except Exception:
         logger.exception(f"{cancel_shipment.__name__} -- ! BAD PAYLOAD ERROR")
+        response_data = {"Success": False, "ErrorMessages": "Bad Payload"}
         response = Response(
-            content=json.dumps({"Success": False, "ErrorMessages": "Bad Payload"}),
+            content=json.dumps(response_data),
             status_code=422,
             media_type="application/json"
         )
-        await backup_request(request, dict(response))
+        await backup_request(request, response)
         return response
     
     response = {
