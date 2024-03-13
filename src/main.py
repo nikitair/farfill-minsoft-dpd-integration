@@ -68,7 +68,7 @@ async def create_shipment_test(request: Request):
             status_code=401,
             media_type="application/json"
         )
-        await backup_request(request, response)
+        await backup_request(request, response_data)
         return response
 
     try:
@@ -82,7 +82,7 @@ async def create_shipment_test(request: Request):
             status_code=422,
             media_type="application/json"
         )
-        await backup_request(request, response)
+        await backup_request(request, response_data)
         return response
 
     if payload:
@@ -108,7 +108,7 @@ async def create_shipment(request: Request):
             status_code=401,
             media_type="application/json"
         )
-        await backup_request(request, response)
+        await backup_request(request, response_data)
         return response
 
     try:
@@ -122,7 +122,7 @@ async def create_shipment(request: Request):
             status_code=422,
             media_type="application/json"
         )
-        await backup_request(request, response)
+        await backup_request(request, response_data)
         return response
 
     if payload:
@@ -151,7 +151,7 @@ async def cancel_shipment_test(request: Request):
         )
         logger.warning(f"{cancel_shipment_test.__name__} -- ! UNAUTHORIZED REQUEST")
 
-        await backup_request(request, dict(response))
+        await backup_request(request, response_data)
 
         return response
     
@@ -166,7 +166,7 @@ async def cancel_shipment_test(request: Request):
             status_code=422,
             media_type="application/json"
         )
-        await backup_request(request, response)
+        await backup_request(request, response_data)
         return response
     
     response = {
@@ -195,7 +195,7 @@ async def cancel_shipment(request: Request):
         )
         logger.warning(f"{cancel_shipment.__name__} -- ! UNAUTHORIZED REQUEST")
 
-        await backup_request(request, response)
+        await backup_request(request, response_data)
 
         return response
     
@@ -210,7 +210,7 @@ async def cancel_shipment(request: Request):
             status_code=422,
             media_type="application/json"
         )
-        await backup_request(request, response)
+        await backup_request(request, response_data)
         return response
     
     response = {
