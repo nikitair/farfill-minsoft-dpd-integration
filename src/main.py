@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 from fastapi import FastAPI, Request, HTTPException, Response
 import uvicorn
 from logs.logging_config import logger
-# from utils import save_to_backup
+from utils import save_to_backup
 # from schemas import CreateShipmentRequest, CancelShipmentRequest
 from views import create_shipment_view
 
@@ -28,13 +28,14 @@ def startup_event():
 
 
 @app.get("/api/mintsoft")
-async def index():
+async def index(request: Request):
     logger.info(f"{index.__name__} -- INDEX ENDPOINT TRIGGERED")
-    return {"message": "Hello World!"}
+    response = {"message": "Hello World!"}
+    return response
 
 
 @app.get("/api/mintsoft/test")
-async def index_test():
+async def index_test(request: Request):
     logger.info(f"{index.__name__} -- INDEX TEST ENDPOINT TRIGGERED")
     return {"message": "Hello Test!"}
 

@@ -1,27 +1,64 @@
 import json
 import requests
+from fastapi import Request
+from logs.logging_config import logger
+from datetime import datetime
+
+def retrieve_geosession_token(api_key):
+    """
+    Function to retrieve a new Geosession token from the geolocation service's API.
+
+    Parameters:
+        api_key (str): Your API key for the geolocation service.
+
+    Returns:
+        str: The obtained Geosession token.
+    """
+    response = requests.get('https://geolocation-service.com/token',
+                            params={'key': api_key})
+
+    if response.status_code == 200:
+        return response.json().get('token')
+    else:
+        response.raise_for_status()
 
 
-def login():
-    with open("data/auth_data.json", "r") as file:
-        data = json.load(file)
-    auth_token = data["auth_token"]
+def backup_request(request: Request, response):
+    logger.info(f"{backup_request.__name__} -- BACKING UP REQUEST")
 
-    login_endpoint = "https://api.dpd.co.uk/user/?action=login"
-    login_headers = {
-        "Authorization": auth_token,
-        "Content-Type": "application/json",
-        "Accept": "application/json"
+    all_backups = []
+
+    try:
+        with open("data/backups.json", "r") as f:
+            all_backups = json.load(f)
+    except Exception:
+        logger.exception(f"{backup_request.__name__} -- !!! ERROR LOADING BACKUPS JSON")
+    
+    if isinstance(all_backups, list):
+        logger.info(f"{backup_request.__name__} -- {len(all_backups)} RECEIVED")
+
+    result = {
+        "ip": None,
+        "headers": None,
+        "request": None,
+        "response": response,
+        "created_at": datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S UTC')
     }
 
-    response = requests.post(login_endpoint, headers=login_headers)
-    response.raise_for_status()
+    try:
+        result["ip"] = request.client.host
+        result["headers"] = request.headers
+        result["request"] = request.json()
+    except Exception:
+        logger.exception(f"{backup_request.__name__} -- !!! ERROR PARSING REQUEST")
 
-    login_data = response.json()["data"]
-    return login_data["geoSession"]
+    logger.info(f"{backup_request.__name__} -- PREPARED BACKUP - {result}")
 
+    with open("data/backups.json", "w") as f:
+        all_backups.append(result)
+        json.dump(all_backups)
 
-def save_to_backup(data):
-    backup_file = "data/backups.json"
-    with open(backup_file, "w") as f:
-        json.dump(data, f, indent=4)
+    logger.info(f"{backup_request.__name__} -- BACKUP SAVED")
+    return True
+
+    
