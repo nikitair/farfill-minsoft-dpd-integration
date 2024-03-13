@@ -4,7 +4,7 @@ import json
 import requests
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
-
+import datetime
 
 login_endpoint = "https://api.dpd.co.uk/user/?action=login"
 login_headers = {
@@ -21,7 +21,7 @@ geo_session = response.json()["data"]["geoSession"]
 
 
 
-def create_shipment_view(result):
+def create_shipment_view(payload):
     endpoint = "https://api.dpd.co.uk/shipping/network/"
     headers = {
         "Authorization": "Basic ZmFyZmlsbDpmYXJmaWxsQDEyMw==",
@@ -30,7 +30,7 @@ def create_shipment_view(result):
         "GeoClient": "account/118990"
     }
 
-    result = {
+    payload = {
     "AccountNo": "an",
     "Password": "pw",
     "ShipmentId": "260692",
@@ -143,53 +143,54 @@ def create_shipment_view(result):
             ]
 }
 
-    # account_no = result["AccountNo"]
-    # password = result["Password"]
-    # shipment_id = result["ShipmentId"]
-    # service_name = result["ServiceName"]
-    # service_code = result["ServiceCode"]
-    # delivery_notes = result["DeliveryNotes"]
-    # client = result["Client"]
-    # warehouse = result["Warehouse"]
-    # order_number = result["OrderNumber"]
-    # external_order_reference = result["ExternalOrderReference"]
-    # channel = result["Channel"]
+    # account_no = payload["AccountNo"]
+    # password = payload["Password"]
+    # shipment_id = payload["ShipmentId"]
+    # service_name = payload["ServiceName"]
+    # service_code = payload["ServiceCode"]
+    # delivery_notes = payload["DeliveryNotes"]
+    # client = payload["Client"]
+    # warehouse = payload["Warehouse"]
+    # order_number = payload["OrderNumber"]
+    # external_order_reference = payload["ExternalOrderReference"]
+    # channel = payload["Channel"]
 
-    # ship_from_email = result["ShipFrom"]["Email"]
-    ship_from_phone = result["ShipFrom"]["Phone"]
-    ship_from_name = result["ShipFrom"]["Name"]
-    ship_from_address1 = result["ShipFrom"]["AddressLine1"]
-    ship_from_address2 = result["ShipFrom"]["AddressLine2"]
-    # ship_from_address3 = result["ShipFrom"]["AddressLine3"]
-    ship_from_town = result["ShipFrom"]["Town"]
-    ship_from_county = result["ShipFrom"]["County"]
-    ship_from_postcode = result["ShipFrom"]["PostCode"]
-    ship_from_country_code = result["ShipFrom"]["CountryCode"]
-    # ship_from_vat_number = result["ShipFrom"]["VATNumber"]
-    # ship_from_eori_number = result["ShipFrom"]["EORINumber"]
-    # ship_from_ioss_number = result["ShipFrom"]["IOSSNumber"]
+    # ship_from_email = payload["ShipFrom"]["Email"]
+    ship_from_phone = payload["ShipFrom"]["Phone"]
+    ship_from_name = payload["ShipFrom"]["Name"]
+    ship_from_address1 = payload["ShipFrom"]["AddressLine1"]
+    ship_from_address2 = payload["ShipFrom"]["AddressLine2"]
+    # ship_from_address3 = payload["ShipFrom"]["AddressLine3"]
+    ship_from_town = payload["ShipFrom"]["Town"]
+    ship_from_county = payload["ShipFrom"]["County"]
+    ship_from_postcode = payload["ShipFrom"]["PostCode"]
+    ship_from_country_code = payload["ShipFrom"]["CountryCode"]
+    # ship_from_vat_number = payload["ShipFrom"]["VATNumber"]
+    # ship_from_eori_number = payload["ShipFrom"]["EORINumber"]
+    # ship_from_ioss_number = payload["ShipFrom"]["IOSSNumber"]
 
-    ship_to_email = result["ShipTo"]["Email"]
-    ship_to_phone = result["ShipTo"]["Phone"]
-    ship_to_name = result["ShipTo"]["Name"]
-    ship_to_address1 = result["ShipTo"]["AddressLine1"]
-    ship_to_address2 = result["ShipTo"]["AddressLine2"]
-    # ship_to_address3 = result["ShipTo"]["AddressLine3"]
-    ship_to_town = result["ShipTo"]["Town"]
-    ship_to_county = result["ShipTo"]["County"]
-    ship_to_postcode = result["ShipTo"]["PostCode"]
-    ship_to_country_code = result["ShipTo"]["CountryCode"]
-    # ship_to_vat_number = result["ShipTo"]["VATNumber"]
-    # ship_to_eori_number = result["ShipTo"]["EORINumber"]
+    ship_to_email = payload["ShipTo"]["Email"]
+    ship_to_phone = payload["ShipTo"]["Phone"]
+    ship_to_name = payload["ShipTo"]["Name"]
+    ship_to_address1 = payload["ShipTo"]["AddressLine1"]
+    ship_to_address2 = payload["ShipTo"]["AddressLine2"]
+    # ship_to_address3 = payload["ShipTo"]["AddressLine3"]
+    ship_to_town = payload["ShipTo"]["Town"]
+    ship_to_county = payload["ShipTo"]["County"]
+    ship_to_postcode = payload["ShipTo"]["PostCode"]
+    ship_to_country_code = payload["ShipTo"]["CountryCode"]
+    # ship_to_vat_number = payload["ShipTo"]["VATNumber"]
+    # ship_to_eori_number = payload["ShipTo"]["EORINumber"]
 
-    parcels_count = len(result["Parcels"])
-    parcels = result["Parcels"]
-    total_weight = sum(parcel["Weight"] for parcel in result["Parcels"])
+    parcels_count = len(payload["Parcels"])
+    parcels = payload["Parcels"]
+    total_weight = sum(parcel["Weight"] for parcel in payload["Parcels"])
+    current_time = datetime.datetime.now().isoformat()
 
-    payload = {
+    payload_dpd = {
     "jobId": None,
     "collectionOnDelivery": False,
-    "collectionDate": "2024-03-12T09:00:00",
+    "collectionDate": current_time,#"2024-03-12T09:00:00"
     "consolidate": False,
     "consignment": [
         {
@@ -261,7 +262,7 @@ def create_shipment_view(result):
         }
     ]
 }
-    payload_parses = payload["consignment"]["parcel"]
+    # payload_parses = payload_dpd["consignment"][0]["parcel"]
 
     url = "https://api.dpd.co.uk/shipping/shipment"
     params = {"test": "true"}
@@ -272,11 +273,10 @@ def create_shipment_view(result):
     "GeoSession": geo_session
     }
 
-    response = requests.post(url, json=payload, headers=headers)
+    response = requests.post(url, json=payload_dpd, headers=headers)
 
 
     data = response.json()
-
     response_text = get_label(data)
     send_mintsoft = send_to_mintsoft(response_text)
 
@@ -285,7 +285,7 @@ def create_shipment_view(result):
 
 def get_label(data):
     shipment_id = data['data']['shipmentId']
-    label_endpoint = f"https://api.dpd.co.uk/shipping/shipment/1125991484/label/"
+    label_endpoint = f"https://api.dpd.co.uk/shipping/shipment/{shipment_id}/label/"
     label_headers = {
         
         "Accept": "text/vnd.eltron-epl",
@@ -341,5 +341,3 @@ def send_to_mintsoft(response_text):
     return dpd_to_mintsoft_response
 
 
-final = create_shipment_view('')
-print(final)
