@@ -47,12 +47,18 @@ async def backup_request(request: Request, response):
         "created_at": datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S UTC')
     }
 
+    request_data = None
+    try:
+        request_data = await request.json()
+    except Exception:
+        logger.info(f"{backup_request.__name__} -- NO REQUEST PAYLOAD")
+
     try:
         result["ip"] = str(request.client.host)
         result["url"] = str(request.url)
         result["base_url"] = str(request.base_url)
         result["headers"] = dict(request.headers)
-        result["request"] = await request.json()
+        result["request"] = request_data
     except Exception:
         logger.exception(f"{backup_request.__name__} -- !!! ERROR PARSING REQUEST")
 
