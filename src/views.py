@@ -1,6 +1,10 @@
+import base64
+from io import BytesIO
 import json
-from logs.logging_config import logger
 import requests
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
+import datetime
 
 
 login_endpoint = "https://api.dpd.co.uk/user/?action=login"
@@ -11,35 +15,26 @@ login_headers = {
 }
 
 response = requests.post(login_endpoint, headers=login_headers)
-response.raise_for_status()  # Перевіряємо, чи немає помилки у відповіді
-
-# Отримуємо значення geoSession з відповіді
-login_data = response.json()["data"]
-geo_session = login_data["geoSession"]
+response.raise_for_status()
 
 
+geo_session = response.json()["data"]["geoSession"] 
 
 def create_shipment_view(payload):
+    with open("data/auth_data.json", "r") as file:
+        data = json.load(file)
+    geosession = data["geosession"]
+    auth_token = data["auth_token"]
+
     endpoint = "https://api.dpd.co.uk/shipping/network/"
     headers = {
-        "Authorization": "Basic ZmFyZmlsbDpmYXJmaWxsQDEyMw==",
+        "Authorization": auth_token,
         "Accept": "application/json",
-        "GeoSession": geo_session,
+        "GeoSession": geosession,
         "GeoClient": "account/118990"
     }
 
-<<<<<<< Updated upstream
-    result = {
-    "Success": False,
-    "ErrorMessages": None,
-    "Shipment": {
-        "MainTrackingNumber": "",
-        "LabelFormat": "PNG",
-        "CustomsDocumentFormat": "PDF",
-        "Packages": [
-            {
-                "TrackingNumber": "",
-=======
+
 #     payload = {
 #     "AccountNo": "an",
 #     "Password": "pw",
@@ -152,6 +147,8 @@ def create_shipment_view(payload):
 #                 }
 #             ]
 # }
+
+
 
     # account_no = payload["AccountNo"]
     # password = payload["Password"]
@@ -339,52 +336,18 @@ def send_to_mintsoft(response_text):
             "Packages": [
                 {
                 "TrackingNumber": "TrackingNumber01",
->>>>>>> Stashed changes
                 "TrackingUrl": None,
                 "ParcelNo": 1,
-                "LabelAsBase64": "",
-                "CustomsDocumentName": "",
-                "CustomsPDFDocumentAsBase64": ""
-            },
-            {
-                "TrackingNumber": "",
-                "TrackingUrl": None,
-                "ParcelNo": 3,
-                "LabelAsBase64": "",
-                "CustomsDocumentName": "",
-                "CustomsPDFDocumentAsBase64": ""
-            }
+                "LabelAsBase64": LabelAsBase64,
+                "CustomsDocumentName": "CN22",
+                "CustomsPDFDocumentAsBase64": CustomsPDFDocumentAsBase64
+                }
             ]
         }
     }
-    
-
-    parsed_data = json.loads(result)
-    shipment = parsed_data["Shipment"]
-    main_tracking_number = shipment["MainTrackingNumber"]
-    label_format = shipment["LabelFormat"]
-    customs_document_format = shipment["CustomsDocumentFormat"]
-    packages = shipment["Packages"]
-
-    for package in packages:
-        tracking_number = package["TrackingNumber"]
-        tracking_url = package["TrackingUrl"]
-        parcel_no = package["ParcelNo"]
-        label_as_base64 = package["LabelAsBase64"]
-        customs_document_name = package["CustomsDocumentName"]
-        customs_pdf_document_as_base64 = package["CustomsPDFDocumentAsBase64"]
-    
-    try:
-        response = requests.get(endpoint, params=payload, headers=headers)
-        response.raise_for_status() 
-    except requests.RequestException as e:
-        logger.error("send_dpd_request -- Error sending request to DPD API:", exc_info=True)
-    return result
-
-
-
-
+    return dpd_to_mintsoft_response
 
 
 def cancel_shipment_view(data):
     ...
+
