@@ -6,6 +6,7 @@ from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
 import datetime
 
+
 login_endpoint = "https://api.dpd.co.uk/user/?action=login"
 login_headers = {
     "Authorization": "Basic ZmFyZmlsbDpmYXJmaWxsQDEyMw==",
@@ -19,14 +20,17 @@ response.raise_for_status()
 
 geo_session = response.json()["data"]["geoSession"] 
 
-
-
 def create_shipment_view(payload):
+    with open("data/auth_data.json", "r") as file:
+        data = json.load(file)
+    geosession = data["geosession"]
+    auth_token = data["auth_token"]
+
     endpoint = "https://api.dpd.co.uk/shipping/network/"
     headers = {
-        "Authorization": "Basic ZmFyZmlsbDpmYXJmaWxsQDEyMw==",
+        "Authorization": auth_token,
         "Accept": "application/json",
-        "GeoSession": "f8a29d27-c2c6-4c11-afda-9177fcb22290",
+        "GeoSession": geosession,
         "GeoClient": "account/118990"
     }
 
@@ -340,4 +344,7 @@ def send_to_mintsoft(response_text):
     }
     return dpd_to_mintsoft_response
 
+
+def cancel_shipment_view(data):
+    ...
 
