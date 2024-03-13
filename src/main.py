@@ -53,8 +53,7 @@ async def index_test(request: Request):
     return response
 
 
-# @app.get("/api/Order/{id}/Shipments")
-@app.post("api/mintsoft/test/CreateShipment")
+@app.post("/api/mintsoft/test/CreateShipment")
 async def create_shipment_test(request: Request):
     logger.info(f"{create_shipment_test.__name__} -- CREATE SHIPMENT TEST ENDPOINT TRIGGERED")
 
@@ -80,7 +79,7 @@ async def create_shipment_test(request: Request):
             status_code=422,
             media_type="application/json"
         )
-        await backup_request(request, response)
+        await backup_request(request, dict(response))
         return response
 
     if payload:
@@ -117,7 +116,7 @@ async def create_shipment(request: Request):
             status_code=422,
             media_type="application/json"
         )
-        await backup_request(request, response)
+        await backup_request(request, dict(response))
         return response
 
     if payload:
@@ -145,7 +144,7 @@ async def cancel_shipment_test(request: Request):
         )
         logger.warning(f"{cancel_shipment_test.__name__} -- ! UNAUTHORIZED REQUEST")
 
-        await backup_request(request, response)
+        await backup_request(request, dict(response))
 
         return response
     
@@ -159,7 +158,7 @@ async def cancel_shipment_test(request: Request):
             status_code=422,
             media_type="application/json"
         )
-        await backup_request(request, response)
+        await backup_request(request, dict(response))
         return response
     
     response = {
@@ -187,7 +186,7 @@ async def cancel_shipment(request: Request):
         )
         logger.warning(f"{cancel_shipment.__name__} -- ! UNAUTHORIZED REQUEST")
 
-        await backup_request(request, response)
+        await backup_request(request, dict(response))
 
         return response
     
@@ -201,7 +200,7 @@ async def cancel_shipment(request: Request):
             status_code=422,
             media_type="application/json"
         )
-        await backup_request(request, response)
+        await backup_request(request, dict(response))
         return response
     
     response = {
