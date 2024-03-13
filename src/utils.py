@@ -60,7 +60,7 @@ async def backup_request(request: Request, response):
 
     with open("data/backups.json", "w") as f:
         all_backups.append(result)
-        json.dump(all_backups)
+        json.dump(all_backups, f)
 
     logger.info(f"{backup_request.__name__} -- BACKUP SAVED")
     return True
