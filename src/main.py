@@ -184,13 +184,10 @@ async def cancel_shipment(request: Request):
             status_code=401,
             media_type="application/json"
         )
-        print("****")
-        print(response)
-        print(dict(response))
-        print("****")
+
         logger.warning(f"{cancel_shipment.__name__} -- ! UNAUTHORIZED REQUEST")
 
-        await backup_request(request, dict(response))
+        await backup_request(request, response.__repr__())
 
         return response
     
