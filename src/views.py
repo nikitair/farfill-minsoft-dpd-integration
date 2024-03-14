@@ -398,5 +398,5 @@ def cancel_shipment_view(data):
     else:
         return {  
             "Success": False,  
-            "ErrorMessages": [ "Bad Request" ]  
+            "ErrorMessages": [ response.text ]  
             }  
