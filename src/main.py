@@ -169,18 +169,18 @@ async def cancel_shipment_test(request: Request):
         await backup_request(request, response_data)
         return response
     
-    # response = {
-    #     "Success": True,
-    #     "ErrorMessages": [ "Already Shipped", "Another message" ]
-    #     }
+    return {  
+            "Success": True,  
+            "ErrorMessages": []  
+            }  
 
 
-    if payload:
-        response = cancel_shipment_view(payload)  # Pass the payload to the function in view.py
+    # if payload:
+    #     response = cancel_shipment_view(payload)  # Pass the payload to the function in view.py
 
-        await backup_request(request, response)
+    #     await backup_request(request, response)
 
-        return response
+    #     return response
 
 
 @app.delete("/api/mintsoft/CancelShipment")
@@ -217,13 +217,18 @@ async def cancel_shipment(request: Request):
         )
         await backup_request(request, response_data)
         return response
+    
+    return {  
+            "Success": True,  
+            "ErrorMessages": []  
+            }  
 
-    if payload:
-        response = cancel_shipment_view(payload)  # Pass the payload to the function in view.py
+    # if payload:
+    #     response = cancel_shipment_view(payload)  # Pass the payload to the function in view.py
 
-        await backup_request(request, response)
+    #     await backup_request(request, response)
 
-        return response
+    #     return response
 
 
 @app.get("/api/mintsoft/backups")
