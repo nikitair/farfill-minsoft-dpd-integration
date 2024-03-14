@@ -387,5 +387,6 @@ def cancel_shipment_view(data):
         "comment": comment
     }
     response = requests.delete(url, headers=headers, json=body)
-    print(response)
-    return response.json()
+
+    logger.info(f"{cancel_shipment_view.__name__} -- STATUS CODE - {response.status_code}")
+    return response.text
