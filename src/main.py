@@ -222,7 +222,7 @@ async def cancel_shipment(request: Request):
     return response
 
 
-@app.get("/backups")
+@app.get("/api/mintsoft/backups")
 async def get_backups(request: Request):
     logger.info(f"{get_backups.__name__} -- GET BACKUPS ENDPOINT TRIGGERED")
 
