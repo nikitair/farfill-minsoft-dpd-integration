@@ -222,6 +222,24 @@ async def cancel_shipment(request: Request):
     return response
 
 
+@app.get("/backups")
+async def get_backups():
+    logger.info(f"{get_backups.__name__} -- GET BACKUPS ENDPOINT TRIGGERED")
+
+    response = {
+        "success": False,
+        "data": []
+        }
+
+    try:
+        with open("data/backups.json", "r") as f:
+            response["data"] = json.load(f)
+    except Exception:
+        logger.exception(f"{get_backups.__name__} -- !!! ERROR LOADING BACKUPS")
+
+    return response
+
+
 if __name__ =="__main__":
     uvicorn.run(app=app, port=8000, host="0.0.0.0")
 
