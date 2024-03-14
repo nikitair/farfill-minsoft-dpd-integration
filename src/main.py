@@ -223,8 +223,22 @@ async def cancel_shipment(request: Request):
 
 
 @app.get("/backups")
-async def get_backups():
+async def get_backups(request: Request):
     logger.info(f"{get_backups.__name__} -- GET BACKUPS ENDPOINT TRIGGERED")
+
+    headers = request.headers
+
+    token = headers.get("X-API-KEY")
+    if token != AUTH_TOKEN:
+        response_data = {"Success": False, "ErrorMessages": "Unauthorized"}
+        response = Response(
+            content=json.dumps(response_data),
+            status_code=401,
+            media_type="application/json"
+        )
+        logger.warning(f"{get_backups.__name__} -- ! UNAUTHORIZED REQUEST")
+        await backup_request(request, response_data)
+        return response
 
     response = {
         "success": False,
