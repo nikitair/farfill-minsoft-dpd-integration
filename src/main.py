@@ -185,7 +185,7 @@ async def cancel_shipment_test(request: Request):
 
 @app.delete("/api/mintsoft/CancelShipment")
 async def cancel_shipment(request: Request):
-    logger.info(f"{cancel_shipment.__name__} -- CANCEL SHIPMENT ENDPOINT TRIGGERED")
+    logger.info(f"{cancel_shipment.__name__} -- CANCEL SHIPMENT TEST ENDPOINT TRIGGERED")
 
     payload = None
     headers = request.headers
@@ -217,14 +217,13 @@ async def cancel_shipment(request: Request):
         )
         await backup_request(request, response_data)
         return response
-    
-    response = {
-        "Success": True,
-        "ErrorMessages": [ "Already Shipped", "Another message" ]
-        }
 
-    await backup_request(request, response)
-    return response
+    if payload:
+        response = cancel_shipment_view(payload)  # Pass the payload to the function in view.py
+
+        await backup_request(request, response)
+
+        return response
 
 
 @app.get("/api/mintsoft/backups")

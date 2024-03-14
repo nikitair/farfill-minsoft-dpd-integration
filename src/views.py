@@ -388,4 +388,4 @@ def cancel_shipment_view(data):
     }
     response = requests.delete(url, headers=headers, json=body)
     print(response)
-    return response
+    return response.json()
