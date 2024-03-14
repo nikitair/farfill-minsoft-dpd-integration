@@ -6,7 +6,8 @@ from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
 import datetime
 from logs.logging_config import logger
-
+from html2image import Html2Image
+import img2pdf
 
 login_endpoint = "https://api.dpd.co.uk/user/?action=login"
 login_headers = {
@@ -34,6 +35,8 @@ def get_label(data):
 
     response = requests.get(label_endpoint, headers=label_headers)
     response_text = response.text
+
+
    
     return response_text
 
@@ -322,24 +325,32 @@ def create_shipment_view(payload):
     return send_mintsoft
 
 def send_to_mintsoft(response_text):
-    pdf_buffer = BytesIO()
-    pdf_canvas = canvas.Canvas(pdf_buffer, pagesize=letter)
+    htmlimg = Html2Image()
+    htmlimg.screenshot(html_str=response_text, save_as='label.png')
 
 
-    lines = response_text.split('\n')
-    y_position = 800  
-    for line in lines:
-        pdf_canvas.drawString(100, y_position, line)
-        y_position -= 15  
+    image_path = 'label.png'
+    try:
+        with open(image_path, 'rb') as img_file:
+            img_data = img_file.read()
+    except FileNotFoundError:
+        print(f"Помилка: файл '{image_path}' не знайдено.")
+        exit()
 
-    pdf_canvas.save()
+
+    LabelAsBase64 = base64.b64encode(img_data).decode('utf-8')
 
 
-    pdf_buffer.seek(0)
-    CustomsPDFDocumentAsBase64 = base64.b64encode(pdf_buffer.read()).decode('utf-8')
+    pdf_path = 'label.pdf'
+    with open(pdf_path, 'wb') as pdf_file:
+        pdf_file.write(img2pdf.convert(img_data))
 
-    original_bytes = response_text.encode('utf-8')
-    LabelAsBase64 = base64.b64encode(original_bytes).decode('utf-8')
+
+    with open(pdf_path, 'rb') as pdf_file:
+        pdf_data = pdf_file.read()
+
+    CustomsPDFDocumentAsBase64 = base64.b64encode(pdf_data).decode('utf-8')
+
 
 
     dpd_to_mintsoft_response={
