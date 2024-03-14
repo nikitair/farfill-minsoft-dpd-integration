@@ -376,7 +376,7 @@ def cancel_shipment_view(data):
     password = data["Password"]
     shipment_id = data["TrackingNumber"]
     comment = data["Comment"]
-    url = f"https://api.dpd.ro/v1/shipment/cancel"
+    url = f"https://api.dpd.uk/v1/shipment/cancel"
     headers = {
         "Content-type": "application/json; charset=utf-8"
     }
