@@ -33,7 +33,18 @@ def create_shipment_view(payload):
         "GeoSession": geosession,
         "GeoClient": "account/118990"
     }
-
+    if not payload.get("ShipmentId"):
+        return {
+        "Success": False,
+        "ErrorMessages": ["Wrong payload"],
+        "Shipment": {
+            "MainTrackingNumber": None,
+            "LabelFormat": "PNG",
+            "CustomsDocumentFormat": "PDF",
+            "Packages": []
+        }
+    }
+        
 
 #     payload = {
 #     "AccountNo": "an",
@@ -155,7 +166,7 @@ def create_shipment_view(payload):
     # shipment_id = payload["ShipmentId"]
     # service_name = payload["ServiceName"]
     # service_code = payload["ServiceCode"]
-    # delivery_notes = payload["DeliveryNotes"]
+    delivery_notes = payload["DeliveryNotes"]
     # client = payload["Client"]
     # warehouse = payload["Warehouse"]
     # order_number = payload["OrderNumber"]
@@ -246,12 +257,12 @@ def create_shipment_view(payload):
                 },
                 "address": {
                     "organisation": "",
-                    "countryCode": ship_to_country_code,
-                    "postcode": ship_to_postcode,
-                    "street": ship_to_address1,
-                    "locality": ship_to_address2,
-                    "town": ship_to_town,
-                    "county": ship_to_county
+                    "countryCode": "NL",
+                    "postcode": "2988CK",
+                    "street": "Rotterdam Distribution Center Schaapherderweg 24",
+                    "locality": "Ridderkerk",
+                    "town": "Rotterdam",
+                    "county": "Netherlands"
                 }
             },
             "networkCode": "1^19",
@@ -261,8 +272,8 @@ def create_shipment_view(payload):
             "shippingRef2": "shippingRef2",
             "shippingRef3": "shippingRef3",
             "customsValue": 15,
-            "deliveryInstructions": "Delivery Instructions",
-            "parcelDescription": "Women’s Dress",
+            "deliveryInstructions": delivery_notes,
+            "parcelDescription": "GOODS",
             "liabilityValue": None,
             "liability": False,
             "preCleared": True
@@ -349,5 +360,27 @@ def send_to_mintsoft(response_text):
 
 
 def cancel_shipment_view(data):
-    ...
-
+    # data = {
+    #     "AccountNo": "an",
+    #     "Password": "pw",
+    #     "TrackingNumber": "TrackingNumber02",
+    #     "Comment": None
+    #     }
+    
+    user_name = data['AccountNo']
+    password = data["Password"]
+    shipment_id = data["TrackingNumber"]
+    comment = data["Comment"]
+    url = f"https://api.dpd.co.uk/shipping/shipment"
+    headers = {
+        "Content-type": "application/json; charset=utf-8"
+    }
+    body = {
+        "userName": user_name,
+        "password": password,
+        "shipmentId": shipment_id,
+        "comment": comment
+    }
+    response = requests.delete(url, headers=headers, json=body)
+    print(response)
+    return response

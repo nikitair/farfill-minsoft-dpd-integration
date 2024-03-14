@@ -7,7 +7,7 @@ from fastapi import FastAPI, Request, HTTPException, Response
 import uvicorn
 from logs.logging_config import logger
 from utils import backup_request
-from views import create_shipment_view
+from views import create_shipment_view, cancel_shipment_view
 
 
 load_dotenv()
@@ -169,13 +169,18 @@ async def cancel_shipment_test(request: Request):
         await backup_request(request, response_data)
         return response
     
-    response = {
-        "Success": True,
-        "ErrorMessages": [ "Already Shipped", "Another message" ]
-        }
+    # response = {
+    #     "Success": True,
+    #     "ErrorMessages": [ "Already Shipped", "Another message" ]
+    #     }
 
-    await backup_request(request, response)
-    return response
+
+    if payload:
+        response = cancel_shipment_view(payload)  # Pass the payload to the function in view.py
+
+        await backup_request(request, response)
+
+        return response
 
 
 @app.delete("/api/mintsoft/CancelShipment")
@@ -224,6 +229,6 @@ async def cancel_shipment(request: Request):
 
 if __name__ =="__main__":
     uvicorn.run(app=app, port=8000, host="0.0.0.0")
-
+    
 
     
