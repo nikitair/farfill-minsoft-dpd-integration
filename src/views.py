@@ -376,7 +376,7 @@ def cancel_shipment_view(data):
     password = data["Password"]
     shipment_id = data["TrackingNumber"]
     comment = data["Comment"]
-    url = f"https://api.dpd.co.uk/shipping/shipment"
+    url = f"https://api.dpd.co.uk/shipment/cancel"
     headers = {
         "Content-type": "application/json; charset=utf-8"
     }
@@ -386,7 +386,7 @@ def cancel_shipment_view(data):
         "shipmentId": shipment_id,
         "comment": comment
     }
-    response = requests.delete(url, headers=headers, json=body)
+    response = requests.post(url, headers=headers, json=body)
 
     logger.info(f"{cancel_shipment_view.__name__} -- STATUS CODE - {response.status_code}")
 
