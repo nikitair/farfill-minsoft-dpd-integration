@@ -390,7 +390,7 @@ def cancel_shipment_view(data):
 
     logger.info(f"{cancel_shipment_view.__name__} -- STATUS CODE - {response.status_code}")
 
-    print(response.text)
+    logger.error(f"{cancel_shipment_view.__name__} -- API ERROR - {response.text}")
 
     if response.status_code in (200, 201):
         logger.info(f"{cancel_shipment_view.__name__} -- DPD RESPONSE - {response.json()}")
