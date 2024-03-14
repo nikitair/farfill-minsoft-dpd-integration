@@ -389,4 +389,12 @@ def cancel_shipment_view(data):
     response = requests.delete(url, headers=headers, json=body)
 
     logger.info(f"{cancel_shipment_view.__name__} -- STATUS CODE - {response.status_code}")
-    return response.text
+
+    if response.status_code in (200, 201):
+        logger.info(f"{cancel_shipment_view.__name__} -- DPD RESPONSE - {response.json()}")
+        return response.json()
+    else:
+        return {  
+            "Success": False,  
+            "ErrorMessages": [ "Bad Request" ]  
+            }  
