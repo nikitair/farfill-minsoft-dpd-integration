@@ -291,7 +291,7 @@ def create_shipment_view(payload):
 
 
 def get_label(data):
-    shipment_id = data['data']['shipmentId']
+    shipment_id = data['shipmentId']
     label_endpoint = f"https://api.dpd.co.uk/shipping/shipment/{shipment_id}/label/"
     label_headers = {
         
