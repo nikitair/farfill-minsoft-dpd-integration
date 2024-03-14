@@ -5,6 +5,7 @@ import requests
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
 import datetime
+from logs.logging_config import logger
 
 
 login_endpoint = "https://api.dpd.co.uk/user/?action=login"
@@ -298,6 +299,9 @@ def create_shipment_view(payload):
     }
 
     response = requests.post(url, json=payload_dpd, headers=headers)
+
+    logger.info(response.status_code)
+    logger.info(response.json())
 
 
     data = response.json()
