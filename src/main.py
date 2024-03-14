@@ -248,6 +248,7 @@ async def get_backups(request: Request):
     try:
         with open("data/backups.json", "r") as f:
             response["data"] = json.load(f)
+            response["success"] = True
     except Exception:
         logger.exception(f"{get_backups.__name__} -- !!! ERROR LOADING BACKUPS")
 
