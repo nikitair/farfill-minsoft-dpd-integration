@@ -186,7 +186,7 @@ def create_shipment_view(payload):
     # password = payload["Password"]
     # shipment_id = payload["ShipmentId"]
     # service_name = payload["ServiceName"]
-    # service_code = payload["ServiceCode"]
+    service_code = payload["ServiceCode"]
     delivery_notes = payload["DeliveryNotes"]
     # client = payload["Client"]
     # warehouse = payload["Warehouse"]
@@ -207,12 +207,13 @@ def create_shipment_view(payload):
     # ship_from_vat_number = payload["ShipFrom"]["VATNumber"]
     # ship_from_eori_number = payload["ShipFrom"]["EORINumber"]
     # ship_from_ioss_number = payload["ShipFrom"]["IOSSNumber"]
-
+    company_name_from = payload["ShipFrom"]["CompanyName"]
     ship_to_email = payload["ShipTo"]["Email"]
     ship_to_phone = payload["ShipTo"]["Phone"]
     ship_to_name = payload["ShipTo"]["Name"]
     ship_to_address1 = payload["ShipTo"]["AddressLine1"]
     ship_to_address2 = payload["ShipTo"]["AddressLine2"]
+    company_name_to = payload["ShipTo"]["CompanyName"]
     # ship_to_address3 = payload["ShipTo"]["AddressLine3"]
     ship_to_town = payload["ShipTo"]["Town"]
     ship_to_county = payload["ShipTo"]["County"]
@@ -225,6 +226,11 @@ def create_shipment_view(payload):
     parcels = payload["Parcels"]
     total_weight = sum(parcel["Weight"] for parcel in payload["Parcels"])
     current_time = datetime.datetime.now().isoformat()
+
+    if service_code == '01':
+        service_code= '1^39'
+    else:
+        service_code= '1^19'
 
     payload_dpd = {
     "jobId": None,
@@ -242,7 +248,7 @@ def create_shipment_view(payload):
                     "telephone": ship_from_phone
                 },
                 "address": {
-                    "organisation": "",
+                    "organisation": company_name_from,
                     "countryCode": ship_from_country_code,
                     "postcode": ship_from_postcode,
                     "street": ship_from_address1,
@@ -257,7 +263,7 @@ def create_shipment_view(payload):
                     "telephone": ship_to_phone
                 },
                 "address": {
-                    "organisation": "",
+                    "organisation": company_name_to,
                     "countryCode": ship_to_country_code,
                     "postcode": ship_to_postcode,
                     "street": ship_to_address1,
@@ -286,7 +292,7 @@ def create_shipment_view(payload):
                     "county": "Netherlands"
                 }
             },
-            "networkCode": "1^19",
+            "networkCode": service_code,
             "numberOfParcels": parcels_count,
             "totalWeight": total_weight,
             "shippingRef1": "shippingRef1",
