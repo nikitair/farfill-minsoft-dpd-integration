@@ -332,31 +332,10 @@ def create_shipment_view(payload):
 
 def send_to_mintsoft(response_text):
     htmlimg = Html2Image()
-    htmlimg.screenshot(html_str=response_text, save_as='label.png')
-
-
-    image_path = 'label.png'
-    try:
-        with open(image_path, 'rb') as img_file:
-            img_data = img_file.read()
-    except FileNotFoundError:
-        print(f"Помилка: файл '{image_path}' не знайдено.")
-        exit()
-
-
-    LabelAsBase64 = base64.b64encode(img_data).decode('utf-8')
-
-
-    pdf_path = 'label.pdf'
-    with open(pdf_path, 'wb') as pdf_file:
-        pdf_file.write(img2pdf.convert(img_data))
-
-
-    with open(pdf_path, 'rb') as pdf_file:
-        pdf_data = pdf_file.read()
-
-    CustomsPDFDocumentAsBase64 = base64.b64encode(pdf_data).decode('utf-8')
-
+    image_bytes = htmlimg.screenshot(html_str=response_text)
+    LabelAsBase64 = base64.b64encode(image_bytes).decode('utf-8')
+    pdf_bytes = img2pdf.convert(image_bytes)
+    CustomsPDFDocumentAsBase64 = base64.b64encode(pdf_bytes).decode('utf-8')
 
 
     dpd_to_mintsoft_response={
