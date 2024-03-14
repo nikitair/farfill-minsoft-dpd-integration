@@ -5,6 +5,7 @@ import requests
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
 import datetime
+from logs.logging_config import logger
 
 
 login_endpoint = "https://api.dpd.co.uk/user/?action=login"
@@ -19,6 +20,23 @@ response.raise_for_status()
 
 
 geo_session = response.json()["data"]["geoSession"] 
+
+
+def get_label(data):
+    shipment_id = data['data']['shipmentId']
+    label_endpoint = f"https://api.dpd.co.uk/shipping/shipment/{shipment_id}/label/"
+    label_headers = {
+        
+        "Accept": "text/vnd.eltron-epl",
+        "GeoSession": "f8a29d27-c2c6-4c11-afda-9177fcb22290",
+        "GeoClient": "account/118990"
+    }
+
+    response = requests.get(label_endpoint, headers=label_headers)
+    response_text = response.text
+   
+    return response_text
+
 
 def create_shipment_view(payload):
     with open("data/auth_data.json", "r") as file:
@@ -293,28 +311,15 @@ def create_shipment_view(payload):
 
     response = requests.post(url, json=payload_dpd, headers=headers)
 
+    logger.info(response.status_code)
+    logger.info(response.json())
+
 
     data = response.json()
     response_text = get_label(data)
     send_mintsoft = send_to_mintsoft(response_text)
 
     return send_mintsoft
-
-
-def get_label(data):
-    shipment_id = data['data']['shipmentId']
-    label_endpoint = f"https://api.dpd.co.uk/shipping/shipment/{shipment_id}/label/"
-    label_headers = {
-        
-        "Accept": "text/vnd.eltron-epl",
-        "GeoSession": "f8a29d27-c2c6-4c11-afda-9177fcb22290",
-        "GeoClient": "account/118990"
-    }
-
-    response = requests.get(label_endpoint, headers=label_headers)
-    response_text = response.text
-   
-    return response_text
 
 def send_to_mintsoft(response_text):
     pdf_buffer = BytesIO()

@@ -227,6 +227,39 @@ async def cancel_shipment(request: Request):
     return response
 
 
+@app.get("/api/mintsoft/backups")
+async def get_backups(request: Request):
+    logger.info(f"{get_backups.__name__} -- GET BACKUPS ENDPOINT TRIGGERED")
+
+    headers = request.headers
+
+    token = headers.get("X-API-KEY")
+    if token != AUTH_TOKEN:
+        response_data = {"Success": False, "ErrorMessages": "Unauthorized"}
+        response = Response(
+            content=json.dumps(response_data),
+            status_code=401,
+            media_type="application/json"
+        )
+        logger.warning(f"{get_backups.__name__} -- ! UNAUTHORIZED REQUEST")
+        await backup_request(request, response_data)
+        return response
+
+    response = {
+        "success": False,
+        "data": []
+        }
+
+    try:
+        with open("data/backups.json", "r") as f:
+            response["data"] = json.load(f)
+            response["success"] = True
+    except Exception:
+        logger.exception(f"{get_backups.__name__} -- !!! ERROR LOADING BACKUPS")
+
+    return response
+
+
 if __name__ =="__main__":
     uvicorn.run(app=app, port=8000, host="0.0.0.0")
     
