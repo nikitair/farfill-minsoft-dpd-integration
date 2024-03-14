@@ -17,21 +17,11 @@ def draw_line(draw, x, y, w, h, line_thickness):
         draw.rectangle((x, y, x + line_thickness, y + h), fill='black')
 
 # Example of simplified functions that just log their actions, since visual adjustments may require additional work.
-def set_label_height_and_gap(label_height, gap):
-    print(f"Setting label height to {label_height} and gap to {gap}")
+def set_label_height_and_gap(label_height_param, gap_param):
+    global label_height, label_gap
+    label_height = label_height_param
+    label_gap = gap_param
 
-def set_label_offset(top_offset, left_offset):
-    global label_width, label_height
-    print(f"Setting label top offset to {top_offset} and left offset to {left_offset}")
-
-def set_print_speed(speed):
-    print(f"Setting print speed to {speed}")
-
-def set_print_darkness(darkness):
-    print(f"Setting print darkness to {darkness}")
-
-def print_label_zebra_mode():
-    print("Printing label in Zebra mode")
 
 def draw_real_barcode(draw, x, y, barcode_data, width, height):
     # Use python-barcode to create the barcode
@@ -49,14 +39,8 @@ def draw_real_barcode(draw, x, y, barcode_data, width, height):
 
 # Dummy EPL commands to render (you should replace the placeholders with the actual parsed commands)
 epl_commands = [
-    ('N',),
-    ('Q', 822, 24),
-    ('R', 40, 0),
-    ('S', 4),
-    ('D', 15),
-    ('Z', 'B')
     ('A', 760, 120, 1,1,1,1,'N',"DPD"),
-    ('A', 735, 80, "www.dpd.co.uk"),
+    ('A', 735, 80, 1,1,1,1,'N', "www.dpd.co.uk"),
     ('A', 706, 33, "Sender"),
     ('A', 690, 33, "COLLECTIONDETAILS CONTACTNAME"),
     ('A', 674, 33, "ROEBUCK LANE"),
@@ -122,23 +106,7 @@ barcode_width = 700  # Adjust this as necessary
 barcode_height = 200  # Adjust this as necessary
 
 for command in epl_commands:
-    if command[0] == 'N':
-        pass  # Clear the buffer - start a new label
-    elif command[0] == 'Q':
-        _, label_h, gap = command
-        set_label_height_and_gap(label_h, gap)
-    elif command[0] == 'R':
-        _, top_offset, left_offset = command
-        set_label_offset(top_offset, left_offset)
-    elif command[0] == 'S':
-        _, speed = command
-        set_print_speed(speed)
-    elif command[0] == 'D':
-        _, darkness = command
-        set_print_darkness(darkness)
-    elif command[0] == 'ZB':
-        print_label_zebra_mode()
-    elif command[0] == 'A':
+    if command[0] == 'A':
         # Draw text on the label - this assumes text formatting is handled separately
         _, x, y, *text = command
         draw.text((x, y), " ".join(map(str, text)), fill='black')

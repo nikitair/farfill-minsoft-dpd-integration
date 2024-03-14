@@ -376,16 +376,16 @@ def cancel_shipment_view(data):
     password = data["Password"]
     shipment_id = data["TrackingNumber"]
     comment = data["Comment"]
-    url = f"https://api.dpd.ro/v1/shipment/cancel"
+    url = f"https://api.dpd.co.uk/shipping/shipment"
     headers = {
         "Content-type": "application/json; charset=utf-8"
     }
     body = {
-        "userName": user_name,
-        "password": password,
-        "shipmentId": shipment_id,
-        "comment": comment
-    }
+    "userName": "farfill",
+    "Password": "farfill@123",
+    "TrackingNumber": "1127001855",
+    "Comment": None
+}
     response = requests.post(url, headers=headers, json=body)
 
     logger.info(f"{cancel_shipment_view.__name__} -- STATUS CODE - {response.status_code}")
