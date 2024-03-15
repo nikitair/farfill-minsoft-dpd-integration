@@ -1,15 +1,15 @@
 import requests
 import base64
 import img2pdf
-from html2image import Html2Image
+import pdfkit
 
 # URL запиту до API для отримання етикетки
-label_endpoint = f"https://api.dpd.co.uk/shipping/shipment/1126684719/label/"
+label_endpoint = f"https://api.dpd.co.uk/shipping/shipment/1127171565/label/"
 
 # Заголовки для запиту
 label_headers = {
     "Accept": "text/html",
-    "GeoSession": "f8a29d27-c2c6-4c11-afda-9177fcb22290",
+    "GeoSession": "1622103f-eba4-4227-af86-3980bc50f3be",
     "GeoClient": "account/118990"
 }
 
@@ -17,31 +17,42 @@ label_headers = {
 response = requests.get(label_endpoint, headers=label_headers)
 response_text = response.text
 
-htmlimg = Html2Image()
-htmlimg.screenshot(html_str=response_text, save_as='label.png')
 
 
-image_path = 'label.png'
-try:
-    with open(image_path, 'rb') as img_file:
-        img_data = img_file.read()
-except FileNotFoundError:
-    print(f"Помилка: файл '{image_path}' не знайдено.")
-    exit()
+pdf_file = 'lable.pdf'
+
+# Options for wkhtmltopdf, you can customize as needed
+options = {
+    'page-size': 'Letter',
+    'margin-top': '0.75in',
+    'margin-right': '0.75in',
+    'margin-bottom': '0.75in',
+    'margin-left': '0.75in',
+}
+
+# Convert HTML to PDF
+pdfkit.from_string(response_text, pdf_file, options=options)
 
 
-LabelAsBase64 = base64.b64encode(img_data).decode('utf-8')
+pdfkit.from_string(response_text, pdf_file, options=options, configuration={'path': 'D:\\wkhtmltopdf'})
 
 
-pdf_path = 'label.pdf'
-with open(pdf_path, 'wb') as pdf_file:
-    pdf_file.write(img2pdf.convert(img_data))
 
 
-with open(pdf_path, 'rb') as pdf_file:
-    pdf_data = pdf_file.read()
 
-CustomsPDFDocumentAsBase64 = base64.b64encode(pdf_data).decode('utf-8')
+
+# LabelAsBase64 = base64.b64encode(img_data).decode('utf-8')
+
+
+# pdf_path = 'label.pdf'
+# with open(pdf_path, 'wb') as pdf_file:
+#     pdf_file.write(img2pdf.convert(img_data))
+
+
+# with open(pdf_path, 'rb') as pdf_file:
+#     pdf_data = pdf_file.read()
+
+# CustomsPDFDocumentAsBase64 = base64.b64encode(pdf_data).decode('utf-8')
 
 
 
