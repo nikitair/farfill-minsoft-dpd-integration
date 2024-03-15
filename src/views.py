@@ -26,6 +26,7 @@ geo_session = response.json()["data"]["geoSession"]
 
 def get_label(data):
     shipment_id = data['data']['shipmentId']
+    
     label_endpoint = f"https://api.dpd.co.uk/shipping/shipment/{shipment_id}/label/"
     label_headers = {
         
@@ -187,7 +188,6 @@ def create_shipment_view(payload):
     # service_name = payload["ServiceName"]
     service_code = payload["ServiceCode"]
     delivery_notes = payload["DeliveryNotes"]
-    # client = payload["Client"]
     # warehouse = payload["Warehouse"]
     order_number = payload["OrderNumber"]
     # external_order_reference = payload["ExternalOrderReference"]
@@ -195,7 +195,7 @@ def create_shipment_view(payload):
 
     # ship_from_email = payload["ShipFrom"]["Email"]
     ship_from_phone = payload["ShipFrom"]["Phone"]
-    ship_from_name = payload["ShipFrom"]["Name"]
+    ship_from_client_name = payload["Client"]
     ship_from_address1 = payload["ShipFrom"]["AddressLine1"]
     ship_from_address2 = payload["ShipFrom"]["AddressLine2"]
     # ship_from_address3 = payload["ShipFrom"]["AddressLine3"]
@@ -243,7 +243,7 @@ def create_shipment_view(payload):
             "parcel": parcels,
             "collectionDetails": {
                 "contactDetails": {
-                    "contactName": ship_from_name,
+                    "contactName": ship_from_client_name,
                     "telephone": ship_from_phone
                 },
                 "address": {
@@ -294,9 +294,9 @@ def create_shipment_view(payload):
             "networkCode": service_code,
             "numberOfParcels": parcels_count,
             "totalWeight": total_weight,
-            "shippingRef1": "shippingRef1",
-            "shippingRef2": "shippingRef2",
-            "shippingRef3": "shippingRef3",
+            "shippingRef1": order_number,
+            "shippingRef2": ship_from_client_name,
+            "shippingRef3": "",
             "customsValue": 15,
             "deliveryInstructions": delivery_notes,
             "parcelDescription": "GOODS",
@@ -324,12 +324,14 @@ def create_shipment_view(payload):
 
 
     data = response.json()
+    consignmentNo = data['data']['consignmentDetail']['consignmentNumber']
+    parcelNumbers = data['data']['consignmentDetail']['parcelNumbers']
     response_text = get_label(data)
-    send_mintsoft = send_to_mintsoft(response_text, order_number)
+    send_mintsoft = send_to_mintsoft(response_text, order_number, consignmentNo)
 
     return send_mintsoft
 
-def send_to_mintsoft(response_text, order_number):
+def send_to_mintsoft(response_text, order_number, consignmentNo):
     pdf_file = 'label.pdf'
 
     # Convert HTML to PDF
@@ -359,12 +361,12 @@ def send_to_mintsoft(response_text, order_number):
     LabelAsBase64 = base64.b64encode(png_data).decode('utf-8')
     print(f"LabelAsBase64: {LabelAsBase64}")
 
-    
+    # for 
     dpd_to_mintsoft_response={
         "Success": True,
         "ErrorMessages": None,
         "Shipment": {
-            "MainTrackingNumber": order_number,
+            "MainTrackingNumber": consignmentNo,
             "LabelFormat": "PNG",
             "CustomsDocumentFormat": "PDF",
             "Packages": [
