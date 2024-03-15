@@ -30,7 +30,7 @@ def get_label(data):
     label_headers = {
         
         "Accept": "text/vnd.eltron-epl",
-        "GeoSession": "f8a29d27-c2c6-4c11-afda-9177fcb22290",
+        "GeoSession": geo_session,
         "GeoClient": "account/118990"
     }
 
@@ -330,7 +330,7 @@ def create_shipment_view(payload):
     return send_mintsoft
 
 def send_to_mintsoft(response_text, order_number):
-    pdf_file = 'lable.pdf'
+    pdf_file = 'label.pdf'
 
     # Convert HTML to PDF
     pdfkit.from_string(response_text, pdf_file)
@@ -419,5 +419,4 @@ def cancel_shipment_view(data):
             "ErrorMessages": [ response.text ]  
             }  
     
-
 
