@@ -339,7 +339,7 @@ def send_to_mintsoft(response_text, order_number):
         'margin-right': '0.01in',
         'margin-bottom': '0.01in',
         'margin-left': '0.01in',
-        'zoom': 2.0,  # Increase the zoom factor to make images larger
+        'zoom': 0.0,  # Increase the zoom factor to make images larger
     })
 
     # Path where you want to save the PNG images
