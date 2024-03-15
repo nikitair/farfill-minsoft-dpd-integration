@@ -206,13 +206,13 @@ def create_shipment_view(payload):
     # ship_from_vat_number = payload["ShipFrom"]["VATNumber"]
     # ship_from_eori_number = payload["ShipFrom"]["EORINumber"]
     # ship_from_ioss_number = payload["ShipFrom"]["IOSSNumber"]
-    company_name_from = payload["ShipFrom"]["CompanyName"]
+    # company_name_from = payload["ShipFrom"]["CompanyName"]
     ship_to_email = payload["ShipTo"]["Email"]
     ship_to_phone = payload["ShipTo"]["Phone"]
     ship_to_name = payload["ShipTo"]["Name"]
     ship_to_address1 = payload["ShipTo"]["AddressLine1"]
     ship_to_address2 = payload["ShipTo"]["AddressLine2"]
-    company_name_to = payload["ShipTo"]["CompanyName"]
+    # company_name_to = payload["ShipTo"]["CompanyName"]
     # ship_to_address3 = payload["ShipTo"]["AddressLine3"]
     ship_to_town = payload["ShipTo"]["Town"]
     ship_to_county = payload["ShipTo"]["County"]
@@ -247,7 +247,7 @@ def create_shipment_view(payload):
                     "telephone": ship_from_phone
                 },
                 "address": {
-                    "organisation": company_name_from,
+                    "organisation": '',
                     "countryCode": ship_from_country_code,
                     "postcode": ship_from_postcode,
                     "street": ship_from_address1,
@@ -262,7 +262,7 @@ def create_shipment_view(payload):
                     "telephone": ship_to_phone
                 },
                 "address": {
-                    "organisation": company_name_to,
+                    "organisation": '',
                     "countryCode": ship_to_country_code,
                     "postcode": ship_to_postcode,
                     "street": ship_to_address1,
@@ -418,3 +418,6 @@ def cancel_shipment_view(data):
             "Success": False,  
             "ErrorMessages": [ response.text ]  
             }  
+    
+
+
