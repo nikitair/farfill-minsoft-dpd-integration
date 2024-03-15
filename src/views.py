@@ -349,12 +349,14 @@ def send_to_mintsoft(response_text):
         pdf_data = pdf_file.read()
         
     CustomsPDFDocumentAsBase64 = base64.b64encode(pdf_data).decode('utf-8')
+    print(f"\n\n -- {CustomsPDFDocumentAsBase64}")
 
     images = convert_from_path(pdf_file)
     for i, image in enumerate(images):
         image.save(f"page_{i+1}.png", "PNG")
 
     LabelAsBase64 = base64.b64encode(image).decode('utf-8')
+    print(f"\n\n -- {LabelAsBase64}")
 
 
 
@@ -362,9 +364,6 @@ def send_to_mintsoft(response_text):
         pdf_data = pdf_file.read()
 
     
-
-
-
     dpd_to_mintsoft_response={
         "Success": True,
         "ErrorMessages": None,
