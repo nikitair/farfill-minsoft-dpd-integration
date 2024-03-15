@@ -227,7 +227,7 @@ def create_shipment_view(payload):
 
         # ship_to_postcode = payload["ShipTo"]["PostCode"]
 
-    ship_from_postcode = "10001"
+    ship_to_postcode = "10001"
     ship_to_country_code = payload["ShipTo"]["CountryCode"]
     # ship_to_vat_number = payload["ShipTo"]["VATNumber"]
     # ship_to_eori_number = payload["ShipTo"]["EORINumber"]
