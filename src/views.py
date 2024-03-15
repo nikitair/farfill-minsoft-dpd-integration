@@ -29,7 +29,7 @@ def get_label(data):
     label_endpoint = f"https://api.dpd.co.uk/shipping/shipment/{shipment_id}/label/"
     label_headers = {
         
-        "Accept": "text/vnd.eltron-epl",
+        "Accept": "text/html",
         "GeoSession": geo_session,
         "GeoClient": "account/118990"
     }
