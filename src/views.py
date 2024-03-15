@@ -260,7 +260,7 @@ def create_shipment_view(payload):
                 "address": {
                     "organisation": '',
                     "countryCode": ship_from_country_code,
-                    "postcode": 'L1 8JQ'#ship_from_postcode,
+                    "postcode": 'L1 8JQ',#ship_from_postcode,
                     "street": ship_from_address1,
                     "locality": ship_from_address2,
                     "town": ship_from_town,
