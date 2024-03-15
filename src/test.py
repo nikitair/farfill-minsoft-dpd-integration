@@ -34,7 +34,7 @@ options = {
 pdfkit.from_string(response_text, pdf_file, options=options)
 
 
-pdfkit.from_string(response_text, pdf_file, options=options, configuration={'path': 'D:\\wkhtmltopdf'})
+# pdfkit.from_string(response_text, pdf_file, options=options, configuration={'path': 'D:\\wkhtmltopdf'})
 
 
 
