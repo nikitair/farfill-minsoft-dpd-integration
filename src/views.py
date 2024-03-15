@@ -335,7 +335,14 @@ def send_to_mintsoft(response_text, order_number, consignmentNo):
     pdf_file = 'label.pdf'
 
     # Convert HTML to PDF
-    pdfkit.from_string(response_text, pdf_file)
+    pdfkit.from_string(response_text, pdf_file, options = {
+        'page-size': 'A7',  # Set the page size
+        'margin-top': '0.1in',
+        'margin-right': '0.1in',
+        'margin-bottom': '0.1in',
+        'margin-left': '0.1in',
+        'zoom': 2.0,  # Increase the zoom factor to make images larger
+    })
 
     # Path where you want to save the PNG images
     output_path = ''
