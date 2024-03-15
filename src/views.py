@@ -37,8 +37,6 @@ def get_label(data):
     response = requests.get(label_endpoint, headers=label_headers)
     response_text = response.text
 
-
-   
     return response_text
 
 
@@ -191,7 +189,7 @@ def create_shipment_view(payload):
     delivery_notes = payload["DeliveryNotes"]
     # client = payload["Client"]
     # warehouse = payload["Warehouse"]
-    # order_number = payload["OrderNumber"]
+    order_number = payload["OrderNumber"]
     # external_order_reference = payload["ExternalOrderReference"]
     # channel = payload["Channel"]
 
@@ -327,11 +325,11 @@ def create_shipment_view(payload):
 
     data = response.json()
     response_text = get_label(data)
-    send_mintsoft = send_to_mintsoft(response_text)
+    send_mintsoft = send_to_mintsoft(response_text, order_number)
 
     return send_mintsoft
 
-def send_to_mintsoft(response_text):
+def send_to_mintsoft(response_text, order_number):
     pdf_file = 'label.pdf'
 
     # Convert HTML to PDF
@@ -366,12 +364,12 @@ def send_to_mintsoft(response_text):
         "Success": True,
         "ErrorMessages": None,
         "Shipment": {
-            "MainTrackingNumber": "TrackingNumber01",
+            "MainTrackingNumber": order_number,
             "LabelFormat": "PNG",
             "CustomsDocumentFormat": "PDF",
             "Packages": [
                 {
-                "TrackingNumber": "TrackingNumber01",
+                "TrackingNumber": order_number,
                 "TrackingUrl": None,
                 "ParcelNo": 1,
                 "LabelAsBase64": LabelAsBase64,
