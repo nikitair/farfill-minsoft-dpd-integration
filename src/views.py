@@ -335,11 +335,11 @@ def send_to_mintsoft(response_text, order_number):
     # Convert HTML to PDF
     pdfkit.from_string(response_text, pdf_file, options = {
         'page-size': 'A7',  # Set the page size
-        'margin-top': '0.01in',
-        'margin-right': '0.01in',
-        'margin-bottom': '0.01in',
-        'margin-left': '0.01in',
-        'zoom': 0.0,  # Increase the zoom factor to make images larger
+        'margin-top': '0.1in',
+        'margin-right': '0.1in',
+        'margin-bottom': '0.1in',
+        'margin-left': '0.1in',
+        'zoom': 2.0,  # Increase the zoom factor to make images larger
     })
 
     # Path where you want to save the PNG images
