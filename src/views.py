@@ -195,7 +195,12 @@ def create_shipment_view(payload):
 
     # ship_from_email = payload["ShipFrom"]["Email"]
     ship_from_phone = payload["ShipFrom"]["Phone"]
-    ship_from_client_name = payload["Client"]
+    
+    try:
+        ship_from_client_name = payload["Client"]
+    except KeyError:
+        ship_from_client_name = "Default Client Name"
+
     ship_from_address1 = payload["ShipFrom"]["AddressLine1"]
     ship_from_address2 = payload["ShipFrom"]["AddressLine2"]
     # ship_from_address3 = payload["ShipFrom"]["AddressLine3"]
@@ -243,7 +248,7 @@ def create_shipment_view(payload):
             "parcel": parcels,
             "collectionDetails": {
                 "contactDetails": {
-                    "contactName": 'ship_from_client_name',
+                    "contactName": ship_from_client_name,
                     "telephone": ship_from_phone
                 },
                 "address": {
@@ -295,7 +300,7 @@ def create_shipment_view(payload):
             "numberOfParcels": parcels_count,
             "totalWeight": total_weight,
             "shippingRef1": order_number,
-            "shippingRef2": 'ship_from_client_name',
+            "shippingRef2": ship_from_client_name,
             "shippingRef3": "",
             "customsValue": 15,
             "deliveryInstructions": delivery_notes,
