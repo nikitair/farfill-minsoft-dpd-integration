@@ -330,7 +330,7 @@ def create_shipment_view(payload):
     return send_mintsoft
 
 def send_to_mintsoft(response_text, order_number):
-    pdf_file = 'label.pdf'
+    pdf_file = 'lable.pdf'
 
     # Convert HTML to PDF
     pdfkit.from_string(response_text, pdf_file)
