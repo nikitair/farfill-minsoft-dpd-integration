@@ -206,7 +206,11 @@ def create_shipment_view(payload):
     # ship_from_address3 = payload["ShipFrom"]["AddressLine3"]
     ship_from_town = payload["ShipFrom"]["Town"]
     ship_from_county = payload["ShipFrom"]["County"]
-    ship_from_postcode = payload["ShipFrom"]["PostCode"]
+    try:
+        ship_from_postcode = payload["ShipFrom"]["PostCode"]
+    except KeyError:
+        ship_from_postcode = "INVALID POSTCODE"
+        print('INVALID POSTCODE: ', ship_from_postcode)
     ship_from_country_code = payload["ShipFrom"]["CountryCode"]
     # ship_from_vat_number = payload["ShipFrom"]["VATNumber"]
     # ship_from_eori_number = payload["ShipFrom"]["EORINumber"]
