@@ -25,12 +25,6 @@ geo_session = response.json()["data"]["geoSession"]
 
 
 def get_label(data):
-    if data is None:
-        return "Error: No response data received"
-    
-    if 'data' not in data or 'shipmentId' not in data['data']:
-        return "Error: Unable to retrieve shipmentId from response data"
-
     shipment_id = data['data']['shipmentId']
     
     label_endpoint = f"https://api.dpd.co.uk/shipping/shipment/{shipment_id}/label/"
@@ -216,7 +210,7 @@ def create_shipment_view(payload):
         ship_from_postcode = payload["ShipFrom"]["PostCode"]
     except KeyError:
         ship_from_postcode = "INVALID POSTCODE"
-        print('INVALID POSTCODE: ', ship_from_postcode)
+
     ship_from_country_code = payload["ShipFrom"]["CountryCode"]
     # ship_from_vat_number = payload["ShipFrom"]["VATNumber"]
     # ship_from_eori_number = payload["ShipFrom"]["EORINumber"]
@@ -231,7 +225,10 @@ def create_shipment_view(payload):
     # ship_to_address3 = payload["ShipTo"]["AddressLine3"]
     ship_to_town = payload["ShipTo"]["Town"]
     ship_to_county = payload["ShipTo"]["County"]
-    ship_to_postcode = payload["ShipTo"]["PostCode"]
+    try:
+        ship_to_postcode = payload["ShipTo"]["PostCode"]
+    except KeyError:
+        ship_from_postcode = "INVALID POSTCODE"
     ship_to_country_code = payload["ShipTo"]["CountryCode"]
     # ship_to_vat_number = payload["ShipTo"]["VATNumber"]
     # ship_to_eori_number = payload["ShipTo"]["EORINumber"]
