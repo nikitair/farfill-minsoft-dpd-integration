@@ -7,7 +7,7 @@ from fastapi import FastAPI, Request, HTTPException, Response
 import uvicorn
 from logs.logging_config import logger
 from utils import backup_request
-from views import create_shipment_view
+from views import create_shipment_view, cancel_shipment_view
 
 
 load_dotenv()
@@ -169,18 +169,23 @@ async def cancel_shipment_test(request: Request):
         await backup_request(request, response_data)
         return response
     
-    response = {
-        "Success": True,
-        "ErrorMessages": [ "Already Shipped", "Another message" ]
-        }
+    return {  
+            "Success": True,  
+            "ErrorMessages": []  
+            }  
 
-    await backup_request(request, response)
-    return response
+
+    # if payload:
+    #     response = cancel_shipment_view(payload)  # Pass the payload to the function in view.py
+
+    #     await backup_request(request, response)
+
+    #     return response
 
 
 @app.delete("/api/mintsoft/CancelShipment")
 async def cancel_shipment(request: Request):
-    logger.info(f"{cancel_shipment.__name__} -- CANCEL SHIPMENT ENDPOINT TRIGGERED")
+    logger.info(f"{cancel_shipment.__name__} -- CANCEL SHIPMENT TEST ENDPOINT TRIGGERED")
 
     payload = None
     headers = request.headers
@@ -213,17 +218,54 @@ async def cancel_shipment(request: Request):
         await backup_request(request, response_data)
         return response
     
+    return {  
+            "Success": True,  
+            "ErrorMessages": []  
+            }  
+
+    # if payload:
+    #     response = cancel_shipment_view(payload)  # Pass the payload to the function in view.py
+
+    #     await backup_request(request, response)
+
+    #     return response
+
+
+@app.get("/api/mintsoft/backups")
+async def get_backups(request: Request):
+    logger.info(f"{get_backups.__name__} -- GET BACKUPS ENDPOINT TRIGGERED")
+
+    headers = request.headers
+
+    token = headers.get("X-API-KEY")
+    if token != AUTH_TOKEN:
+        response_data = {"Success": False, "ErrorMessages": "Unauthorized"}
+        response = Response(
+            content=json.dumps(response_data),
+            status_code=401,
+            media_type="application/json"
+        )
+        logger.warning(f"{get_backups.__name__} -- ! UNAUTHORIZED REQUEST")
+        await backup_request(request, response_data)
+        return response
+
     response = {
-        "Success": True,
-        "ErrorMessages": [ "Already Shipped", "Another message" ]
+        "success": False,
+        "data": []
         }
 
-    await backup_request(request, response)
+    try:
+        with open("data/backups.json", "r") as f:
+            response["data"] = json.load(f)
+            response["success"] = True
+    except Exception:
+        logger.exception(f"{get_backups.__name__} -- !!! ERROR LOADING BACKUPS")
+
     return response
 
 
 if __name__ =="__main__":
     uvicorn.run(app=app, port=8000, host="0.0.0.0")
-
+    
 
     

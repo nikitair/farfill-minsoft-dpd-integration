@@ -3,3 +3,4 @@ venv
 *pycache*
 .env
 *.log
+backups.json

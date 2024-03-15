@@ -1,82 +1,47 @@
 import requests
-from reportlab.lib.pagesizes import letter
-from reportlab.pdfgen import canvas
-import barcode
-from barcode.writer import ImageWriter
-from reportlab.lib.units import mm
-from reportlab.lib.utils import ImageReader
-from io import BytesIO
+import pdfkit
+from pdf2image import convert_from_path
+import base64
+import os
 
-def create_barcode_image(data, barcode_type='code128', writer_options=None):
-    options = writer_options if writer_options else {
-        'module_width': 0.21 * mm,  # Smallest bar/space in mm
-        'quiet_zone': 2.5 * mm      # quiet_zone in mm
-    }
-    barcode_class = barcode.get_barcode_class(barcode_type)
-    barcode_obj = barcode_class(data, writer=ImageWriter())
-    output = BytesIO()
-    barcode_obj.write(output, options)
-    output.seek(0)
-    return output
+label_endpoint = f"https://api.dpd.co.uk/shipping/shipment/1127171565/label/"
 
-
-# Define the label creation function
-def create_label(commands, output_filename="created_label.pdf"):
-    c = canvas.Canvas(output_filename, pagesize=letter)
-    page_width, page_height = letter
-    top_margin = 15 * mm
-    
-    # Split the command string into individual commands
-    command_lines = commands.split('\n')
-    for command in command_lines:
-        # Skip empty lines
-        if command.strip() == '':
-            continue
-
-        parts = command.strip().split(',')
-        cmd_type = parts[0]
-
-        if cmd_type.startswith('A'):  # Text command
-            x = float(parts[1]) * mm
-            y = page_height - (float(parts[2]) * mm + top_margin)
-            text = parts[7].strip('"')
-            font_size = int(parts[3])
-            c.setFont("Helvetica", font_size)
-            c.drawString(x, y, text)
-
-        elif cmd_type.startswith('B'):  # Barcode command
-            barcode_data = parts[7].strip('"').lstrip('%')
-            x = float(parts[1]) * mm
-            y = page_height - (float(parts[2]) * mm + top_margin)
-            barcode_width = float(parts[5]) * mm
-            barcode_height = float(parts[6]) * mm
-            # Define barcode options for custom width and height
-            barcode_options = {
-                'module_width': float(parts[3]) * mm,
-                'module_height': barcode_height,
-                'quiet_zone': 2.5 * mm,
-                'text_distance': 1.0 * mm,
-                'font_size': 6,
-                'dpi': 300
-            }
-            barcode_image = create_barcode_image(barcode_data, writer_options=barcode_options)
-            c.drawImage(barcode_image, x, y - barcode_height, width=barcode_width, height=barcode_height)
-    
-    c.showPage()
-    c.save()
-
-
-# API call setup
-label_endpoint = "https://api.dpd.co.uk/shipping/shipment/1126224384/label/"
+# Headers for the request
 label_headers = {
-    "Accept": "text/vnd.eltron-epl",
-    "GeoSession": "f8a29d27-c2c6-4c11-afda-9177fcb22290",
+    "Accept": "text/html",
+    "GeoSession": "1622103f-eba4-4227-af86-3980bc50f3be",
     "GeoClient": "account/118990"
 }
 
-# Make the API call and retrieve the label commands
+# Execute the request
 response = requests.get(label_endpoint, headers=label_headers)
 response_text = response.text
 
-# Run the label creation with the commands fetched from the API
-create_label(response_text, "created_label.pdf")
+pdf_file = 'label.pdf'
+
+# Convert HTML to PDF
+pdfkit.from_string(response_text, pdf_file)
+
+# Path where you want to save the PNG images
+output_path = ''
+
+# Convert PDF to PNG images
+pages = convert_from_path(pdf_file)
+
+# Save each page as a PNG image
+for i, page in enumerate(pages):
+    page.save(os.path.join(output_path, f"page_{i+1}.png"), 'PNG')
+
+# Convert PDF to Base64
+with open(pdf_file, 'rb') as f:
+    pdf_data = f.read()
+
+CustomsPDFDocumentAsBase64 = base64.b64encode(pdf_data).decode('utf-8')
+print(f"CustomsPDFDocumentAsBase64: {CustomsPDFDocumentAsBase64}")
+
+# Convert PNG to Base64
+with open(os.path.join(output_path, 'page_1.png'), 'rb') as f:
+    png_data = f.read()
+
+LabelAsBase64 = base64.b64encode(png_data).decode('utf-8')
+print(f"LabelAsBase64: {LabelAsBase64}")

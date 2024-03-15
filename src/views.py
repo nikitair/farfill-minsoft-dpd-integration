@@ -1,11 +1,14 @@
 import base64
 from io import BytesIO
 import json
+import os
 import requests
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
 import datetime
-
+from logs.logging_config import logger
+import pdfkit
+from pdf2image import convert_from_path
 
 login_endpoint = "https://api.dpd.co.uk/user/?action=login"
 login_headers = {
@@ -20,6 +23,23 @@ response.raise_for_status()
 
 geo_session = response.json()["data"]["geoSession"] 
 
+
+def get_label(data):
+    shipment_id = data['data']['shipmentId']
+    label_endpoint = f"https://api.dpd.co.uk/shipping/shipment/{shipment_id}/label/"
+    label_headers = {
+        
+        "Accept": "text/html",
+        "GeoSession": geo_session,
+        "GeoClient": "account/118990"
+    }
+
+    response = requests.get(label_endpoint, headers=label_headers)
+    response_text = response.text
+
+    return response_text
+
+
 def create_shipment_view(payload):
     with open("data/auth_data.json", "r") as file:
         data = json.load(file)
@@ -33,7 +53,18 @@ def create_shipment_view(payload):
         "GeoSession": geosession,
         "GeoClient": "account/118990"
     }
-
+    if not payload.get("ShipmentId"):
+        return {
+        "Success": False,
+        "ErrorMessages": ["Wrong payload"],
+        "Shipment": {
+            "MainTrackingNumber": None,
+            "LabelFormat": "PNG",
+            "CustomsDocumentFormat": "PDF",
+            "Packages": []
+        }
+    }
+        
 
 #     payload = {
 #     "AccountNo": "an",
@@ -154,11 +185,11 @@ def create_shipment_view(payload):
     # password = payload["Password"]
     # shipment_id = payload["ShipmentId"]
     # service_name = payload["ServiceName"]
-    # service_code = payload["ServiceCode"]
-    # delivery_notes = payload["DeliveryNotes"]
+    service_code = payload["ServiceCode"]
+    delivery_notes = payload["DeliveryNotes"]
     # client = payload["Client"]
     # warehouse = payload["Warehouse"]
-    # order_number = payload["OrderNumber"]
+    order_number = payload["OrderNumber"]
     # external_order_reference = payload["ExternalOrderReference"]
     # channel = payload["Channel"]
 
@@ -175,12 +206,13 @@ def create_shipment_view(payload):
     # ship_from_vat_number = payload["ShipFrom"]["VATNumber"]
     # ship_from_eori_number = payload["ShipFrom"]["EORINumber"]
     # ship_from_ioss_number = payload["ShipFrom"]["IOSSNumber"]
-
+    # company_name_from = payload["ShipFrom"]["CompanyName"]
     ship_to_email = payload["ShipTo"]["Email"]
     ship_to_phone = payload["ShipTo"]["Phone"]
     ship_to_name = payload["ShipTo"]["Name"]
     ship_to_address1 = payload["ShipTo"]["AddressLine1"]
     ship_to_address2 = payload["ShipTo"]["AddressLine2"]
+    # company_name_to = payload["ShipTo"]["CompanyName"]
     # ship_to_address3 = payload["ShipTo"]["AddressLine3"]
     ship_to_town = payload["ShipTo"]["Town"]
     ship_to_county = payload["ShipTo"]["County"]
@@ -193,6 +225,11 @@ def create_shipment_view(payload):
     parcels = payload["Parcels"]
     total_weight = sum(parcel["Weight"] for parcel in payload["Parcels"])
     current_time = datetime.datetime.now().isoformat()
+
+    if service_code == '01':
+        service_code= '1^39'
+    else:
+        service_code= '1^19'
 
     payload_dpd = {
     "jobId": None,
@@ -210,7 +247,7 @@ def create_shipment_view(payload):
                     "telephone": ship_from_phone
                 },
                 "address": {
-                    "organisation": "",
+                    "organisation": '',
                     "countryCode": ship_from_country_code,
                     "postcode": ship_from_postcode,
                     "street": ship_from_address1,
@@ -225,7 +262,7 @@ def create_shipment_view(payload):
                     "telephone": ship_to_phone
                 },
                 "address": {
-                    "organisation": "",
+                    "organisation": '',
                     "countryCode": ship_to_country_code,
                     "postcode": ship_to_postcode,
                     "street": ship_to_address1,
@@ -246,23 +283,23 @@ def create_shipment_view(payload):
                 },
                 "address": {
                     "organisation": "",
-                    "countryCode": ship_to_country_code,
-                    "postcode": ship_to_postcode,
-                    "street": ship_to_address1,
-                    "locality": ship_to_address2,
-                    "town": ship_to_town,
-                    "county": ship_to_county
+                    "countryCode": "NL",
+                    "postcode": "2988CK",
+                    "street": "Rotterdam Distribution Center Schaapherderweg 24",
+                    "locality": "Ridderkerk",
+                    "town": "Rotterdam",
+                    "county": "Netherlands"
                 }
             },
-            "networkCode": "1^19",
+            "networkCode": service_code,
             "numberOfParcels": parcels_count,
             "totalWeight": total_weight,
             "shippingRef1": "shippingRef1",
             "shippingRef2": "shippingRef2",
             "shippingRef3": "shippingRef3",
             "customsValue": 15,
-            "deliveryInstructions": "Delivery Instructions",
-            "parcelDescription": "Women’s Dress",
+            "deliveryInstructions": delivery_notes,
+            "parcelDescription": "GOODS",
             "liabilityValue": None,
             "liability": False,
             "preCleared": True
@@ -282,60 +319,57 @@ def create_shipment_view(payload):
 
     response = requests.post(url, json=payload_dpd, headers=headers)
 
+    logger.info(response.status_code)
+    logger.info(response.json())
+
 
     data = response.json()
     response_text = get_label(data)
-    send_mintsoft = send_to_mintsoft(response_text)
+    send_mintsoft = send_to_mintsoft(response_text, order_number)
 
     return send_mintsoft
 
+def send_to_mintsoft(response_text, order_number):
+    pdf_file = 'label.pdf'
 
-def get_label(data):
-    shipment_id = data['data']['shipmentId']
-    label_endpoint = f"https://api.dpd.co.uk/shipping/shipment/{shipment_id}/label/"
-    label_headers = {
-        
-        "Accept": "text/vnd.eltron-epl",
-        "GeoSession": "f8a29d27-c2c6-4c11-afda-9177fcb22290",
-        "GeoClient": "account/118990"
-    }
+    # Convert HTML to PDF
+    pdfkit.from_string(response_text, pdf_file)
 
-    response = requests.get(label_endpoint, headers=label_headers)
-    response_text = response.text
-   
-    return response_text
+    # Path where you want to save the PNG images
+    output_path = ''
 
-def send_to_mintsoft(response_text):
-    pdf_buffer = BytesIO()
-    pdf_canvas = canvas.Canvas(pdf_buffer, pagesize=letter)
+    # Convert PDF to PNG images
+    pages = convert_from_path(pdf_file)
 
+    # Save each page as a PNG image
+    for i, page in enumerate(pages):
+        page.save(os.path.join(output_path, f"page_{i+1}.png"), 'PNG')
 
-    lines = response_text.split('\n')
-    y_position = 800  
-    for line in lines:
-        pdf_canvas.drawString(100, y_position, line)
-        y_position -= 15  
+    # Convert PDF to Base64
+    with open(pdf_file, 'rb') as f:
+        pdf_data = f.read()
 
-    pdf_canvas.save()
+    CustomsPDFDocumentAsBase64 = base64.b64encode(pdf_data).decode('utf-8')
+    print(f"CustomsPDFDocumentAsBase64: {CustomsPDFDocumentAsBase64}")
 
+    # Convert PNG to Base64
+    with open(os.path.join(output_path, 'page_1.png'), 'rb') as f:
+        png_data = f.read()
 
-    pdf_buffer.seek(0)
-    CustomsPDFDocumentAsBase64 = base64.b64encode(pdf_buffer.read()).decode('utf-8')
+    LabelAsBase64 = base64.b64encode(png_data).decode('utf-8')
+    print(f"LabelAsBase64: {LabelAsBase64}")
 
-    original_bytes = response_text.encode('utf-8')
-    LabelAsBase64 = base64.b64encode(original_bytes).decode('utf-8')
-
-
+    
     dpd_to_mintsoft_response={
         "Success": True,
         "ErrorMessages": None,
         "Shipment": {
-            "MainTrackingNumber": "TrackingNumber01",
+            "MainTrackingNumber": order_number,
             "LabelFormat": "PNG",
             "CustomsDocumentFormat": "PDF",
             "Packages": [
                 {
-                "TrackingNumber": "TrackingNumber01",
+                "TrackingNumber": order_number,
                 "TrackingUrl": None,
                 "ParcelNo": 1,
                 "LabelAsBase64": LabelAsBase64,
@@ -349,5 +383,40 @@ def send_to_mintsoft(response_text):
 
 
 def cancel_shipment_view(data):
-    ...
+    # data = {
+    #     "AccountNo": "an",
+    #     "Password": "pw",
+    #     "TrackingNumber": "TrackingNumber02",
+    #     "Comment": None
+    #     }
+    
+    user_name = data['AccountNo']
+    password = data["Password"]
+    shipment_id = data["TrackingNumber"]
+    comment = data["Comment"]
+    url = f"https://api.dpd.co.uk/shipping/shipment"
+    headers = {
+        "Content-type": "application/json; charset=utf-8"
+    }
+    body = {
+    "userName": "farfill",
+    "Password": "farfill@123",
+    "TrackingNumber": "1127001855",
+    "Comment": None
+}
+    response = requests.post(url, headers=headers, json=body)
+
+    logger.info(f"{cancel_shipment_view.__name__} -- STATUS CODE - {response.status_code}")
+
+    logger.error(f"{cancel_shipment_view.__name__} -- API ERROR - {response.text}")
+
+    if response.status_code in (200, 201):
+        logger.info(f"{cancel_shipment_view.__name__} -- DPD RESPONSE - {response.json()}")
+        return response.json()
+    else:
+        return {  
+            "Success": False,  
+            "ErrorMessages": [ response.text ]  
+            }  
+    
 
