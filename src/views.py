@@ -243,7 +243,7 @@ def create_shipment_view(payload):
             "parcel": parcels,
             "collectionDetails": {
                 "contactDetails": {
-                    "contactName": ship_from_client_name,
+                    "contactName": 'ship_from_client_name',
                     "telephone": ship_from_phone
                 },
                 "address": {
@@ -295,7 +295,7 @@ def create_shipment_view(payload):
             "numberOfParcels": parcels_count,
             "totalWeight": total_weight,
             "shippingRef1": order_number,
-            "shippingRef2": ship_from_client_name,
+            "shippingRef2": 'ship_from_client_name',
             "shippingRef3": "",
             "customsValue": 15,
             "deliveryInstructions": delivery_notes,
@@ -326,8 +326,8 @@ def create_shipment_view(payload):
     data = response.json()
     
     response_text = get_label(data)
-    # consignmentNo = data['data']['consignmentDetail'][0]['consignmentNumber']
-    consignmentNo = ''
+    consignmentNo = data['data']['consignmentDetail'][0]['consignmentNumber']
+    
     # parcelNumbers = data['data']['consignmentDetail']['parcelNumbers']
     send_mintsoft = send_to_mintsoft(response_text, order_number, consignmentNo)
 
