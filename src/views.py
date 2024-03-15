@@ -25,6 +25,12 @@ geo_session = response.json()["data"]["geoSession"]
 
 
 def get_label(data):
+    if data is None:
+        return "Error: No response data received"
+    
+    if 'data' not in data or 'shipmentId' not in data['data']:
+        return "Error: Unable to retrieve shipmentId from response data"
+
     shipment_id = data['data']['shipmentId']
     
     label_endpoint = f"https://api.dpd.co.uk/shipping/shipment/{shipment_id}/label/"
