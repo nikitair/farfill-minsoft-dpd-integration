@@ -379,7 +379,7 @@ def send_to_mintsoft(response_text, order_number, consignmentNo):
             "CustomsDocumentFormat": "PDF",
             "Packages": [
                 {
-                "TrackingNumber": order_number,
+                "TrackingNumber": consignmentNo,
                 "TrackingUrl": None,
                 "ParcelNo": 1,
                 "LabelAsBase64": LabelAsBase64,
