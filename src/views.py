@@ -207,8 +207,8 @@ def create_shipment_view(payload):
     ship_from_town = payload["ShipFrom"]["Town"]
     ship_from_county = payload["ShipFrom"]["County"]
 
-    # ship_from_postcode = payload["ShipFrom"]["PostCode"]
-    ship_from_postcode = "10001"
+    ship_from_postcode = payload["ShipFrom"]["PostCode"]
+
 
     ship_from_country_code = payload["ShipFrom"]["CountryCode"]
     # ship_from_vat_number = payload["ShipFrom"]["VATNumber"]
@@ -225,9 +225,9 @@ def create_shipment_view(payload):
     ship_to_town = payload["ShipTo"]["Town"]
     ship_to_county = payload["ShipTo"]["County"]
 
-        # ship_to_postcode = payload["ShipTo"]["PostCode"]
+    ship_to_postcode = payload["ShipTo"]["PostCode"]
 
-    ship_to_postcode = "10001"
+
     ship_to_country_code = payload["ShipTo"]["CountryCode"]
     # ship_to_vat_number = payload["ShipTo"]["VATNumber"]
     # ship_to_eori_number = payload["ShipTo"]["EORINumber"]
