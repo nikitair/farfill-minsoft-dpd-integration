@@ -260,7 +260,7 @@ def create_shipment_view(payload):
                 "address": {
                     "organisation": '',
                     "countryCode": ship_from_country_code,
-                    "postcode": 'CV3 4FR',#ship_from_postcode,
+                    "postcode": ship_from_postcode,
                     "street": ship_from_address1,
                     "locality": ship_from_address2,
                     "town": ship_from_town,
@@ -275,7 +275,7 @@ def create_shipment_view(payload):
                 "address": {
                     "organisation": '',
                     "countryCode": ship_to_country_code,
-                    "postcode": 'CV3 4FR',#ship_to_postcode,
+                    "postcode": ship_to_postcode,
                     "street": ship_to_address1,
                     "locality": ship_to_address2,
                     "town": ship_to_town,
