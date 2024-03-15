@@ -326,7 +326,8 @@ def create_shipment_view(payload):
     data = response.json()
     
     response_text = get_label(data)
-    consignmentNo = data['data']['consignmentDetail'][0]['consignmentNumber']
+    # consignmentNo = data['data']['consignmentDetail'][0]['consignmentNumber']
+    consignmentNo = ''
     # parcelNumbers = data['data']['consignmentDetail']['parcelNumbers']
     send_mintsoft = send_to_mintsoft(response_text, order_number, consignmentNo)
 
