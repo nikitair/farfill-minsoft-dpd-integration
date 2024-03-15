@@ -1,6 +1,7 @@
 import base64
 from io import BytesIO
 import json
+import os
 import requests
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
@@ -331,37 +332,34 @@ def create_shipment_view(payload):
     return send_mintsoft
 
 def send_to_mintsoft(response_text):
-    pdf_file = 'lable.pdf'
+    pdf_file = 'label.pdf'
 
-# Options for wkhtmltopdf, you can customize as needed
-    options = {
-        'page-size': 'Letter',
-        'margin-top': '0.75in',
-        'margin-right': '0.75in',
-        'margin-bottom': '0.75in',
-        'margin-left': '0.75in',
-    }
+    # Convert HTML to PDF
+    pdfkit.from_string(response_text, pdf_file)
 
-# Convert HTML to PDF
-    pdfkit.from_string(response_text, pdf_file, options=options)
+    # Path where you want to save the PNG images
+    output_path = ''
 
-    with open(pdf_file, 'rb') as pdf_file:
-        pdf_data = pdf_file.read()
-        
+    # Convert PDF to PNG images
+    pages = convert_from_path(pdf_file)
+
+    # Save each page as a PNG image
+    for i, page in enumerate(pages):
+        page.save(os.path.join(output_path, f"page_{i+1}.png"), 'PNG')
+
+    # Convert PDF to Base64
+    with open(pdf_file, 'rb') as f:
+        pdf_data = f.read()
+
     CustomsPDFDocumentAsBase64 = base64.b64encode(pdf_data).decode('utf-8')
-    print(f"\n\n -- {CustomsPDFDocumentAsBase64}")
+    print(f"CustomsPDFDocumentAsBase64: {CustomsPDFDocumentAsBase64}")
 
-    images = convert_from_path(pdf_file)
-    for i, image in enumerate(images):
-        image.save(f"page_{i+1}.png", "PNG")
+    # Convert PNG to Base64
+    with open(os.path.join(output_path, 'page_1.png'), 'rb') as f:
+        png_data = f.read()
 
-    LabelAsBase64 = base64.b64encode(image).decode('utf-8')
-    print(f"\n\n -- {LabelAsBase64}")
-
-
-
-    with open(pdf_path, 'rb') as pdf_file:
-        pdf_data = pdf_file.read()
+    LabelAsBase64 = base64.b64encode(png_data).decode('utf-8')
+    print(f"LabelAsBase64: {LabelAsBase64}")
 
     
     dpd_to_mintsoft_response={
