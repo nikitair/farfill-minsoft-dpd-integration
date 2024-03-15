@@ -334,7 +334,7 @@ def send_to_mintsoft(response_text, order_number):
 
     # Convert HTML to PDF
     pdfkit.from_string(response_text, pdf_file, options = {
-        'page-size': 'A4',  # Set the page size
+        'page-size': 'A5',  # Set the page size
         'margin-top': '0.75in',
         'margin-right': '0.75in',
         'margin-bottom': '0.75in',
