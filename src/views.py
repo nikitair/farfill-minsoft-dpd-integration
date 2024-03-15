@@ -6,8 +6,8 @@ from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
 import datetime
 from logs.logging_config import logger
-from html2image import Html2Image
-import img2pdf
+import pdfkit
+from pdf2image import convert_from_path
 
 login_endpoint = "https://api.dpd.co.uk/user/?action=login"
 login_headers = {
@@ -331,31 +331,37 @@ def create_shipment_view(payload):
     return send_mintsoft
 
 def send_to_mintsoft(response_text):
-    htmlimg = Html2Image()
-    htmlimg.screenshot(html_str=response_text, save_as='label.png')
+    pdf_file = 'lable.pdf'
 
+# Options for wkhtmltopdf, you can customize as needed
+    options = {
+        'page-size': 'Letter',
+        'margin-top': '0.75in',
+        'margin-right': '0.75in',
+        'margin-bottom': '0.75in',
+        'margin-left': '0.75in',
+    }
 
-    image_path = 'label.png'
-    try:
-        with open(image_path, 'rb') as img_file:
-            img_data = img_file.read()
-    except FileNotFoundError:
-        print(f"Помилка: файл '{image_path}' не знайдено.")
-        exit()
+# Convert HTML to PDF
+    pdfkit.from_string(response_text, pdf_file, options=options)
 
+    with open(pdf_file, 'rb') as pdf_file:
+        pdf_data = pdf_file.read()
+        
+    CustomsPDFDocumentAsBase64 = base64.b64encode(pdf_data).decode('utf-8')
 
-    LabelAsBase64 = base64.b64encode(img_data).decode('utf-8')
+    images = convert_from_path(pdf_file)
+    for i, image in enumerate(images):
+        image.save(f"page_{i+1}.png", "PNG")
 
+    LabelAsBase64 = base64.b64encode(image).decode('utf-8')
 
-    pdf_path = 'label.pdf'
-    with open(pdf_path, 'wb') as pdf_file:
-        pdf_file.write(img2pdf.convert(img_data))
 
 
     with open(pdf_path, 'rb') as pdf_file:
         pdf_data = pdf_file.read()
 
-    CustomsPDFDocumentAsBase64 = base64.b64encode(pdf_data).decode('utf-8')
+    
 
 
 
