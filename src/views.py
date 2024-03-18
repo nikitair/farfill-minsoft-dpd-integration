@@ -379,7 +379,7 @@ def send_to_mintsoft(response_text, order_number, consignmentNo):
     # Convert PNG to Base64
     with open(os.path.join(output_path, 'page_1.png'), 'rb') as f:
         png_data = f.read()
-        label_as_base64 = base64.b64encode(png_data).decode('utf-8')
+        LabelAsBase64 = base64.b64encode(png_data).decode('utf-8')
 
 
     # for 
