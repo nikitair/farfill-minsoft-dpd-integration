@@ -363,7 +363,7 @@ def send_to_mintsoft(response_text, order_number, consignmentNo):
     # Convert PDF to PNG images
     pages = convert_from_path(pdf_file)
 
-    Save each page as a PNG image
+
     for i, page in enumerate(pages):
         page.save(os.path.join(output_path, f"page_{i+1}.png"), 'PNG')
 
