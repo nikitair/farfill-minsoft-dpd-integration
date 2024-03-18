@@ -364,14 +364,14 @@ def send_to_mintsoft(response_text, order_number, consignmentNo):
     pages = convert_from_path(pdf_file)
 
     # Save each page as a PNG image
-    for i, page in enumerate(pages):
-        page.save(os.path.join(output_path, f"page_{i+1}.png"), 'PNG')
+    # for i, page in enumerate(pages):
+    #     page.save(os.path.join(output_path, f"page_{i+1}.png"), 'PNG')
 
     # Convert PDF to Base64
-    with open(pdf_file, 'rb') as f:
-        pdf_data = f.read()
+    # with open(pdf_file, 'rb') as f:
+    #     pdf_data = f.read()
 
-    CustomsPDFDocumentAsBase64 = base64.b64encode(pdf_data).decode('utf-8')
+    # CustomsPDFDocumentAsBase64 = base64.b64encode(pdf_data).decode('utf-8')
 
 
     # Convert PNG to Base64
@@ -394,9 +394,9 @@ def send_to_mintsoft(response_text, order_number, consignmentNo):
                 "TrackingNumber": consignmentNo,
                 "TrackingUrl": None,
                 "ParcelNo": 1,
-                "LabelAsBase64": CustomsPDFDocumentAsBase64,
+                "LabelAsBase64": LabelAsBase64,
                 "CustomsDocumentName": "CN22",
-                "CustomsPDFDocumentAsBase64": LabelAsBase64
+                "CustomsPDFDocumentAsBase64": None#CustomsPDFDocumentAsBase64
                 }
             ]
         }
