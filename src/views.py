@@ -362,9 +362,9 @@ def send_to_mintsoft(response_text, order_number, consignmentNo):
 
     # Convert PDF to PNG images
     pages = convert_from_path(pdf_file)
-    for i, page in enumerate(pages):
-        page_path = os.path.join(output_path, f"page_{i+1}.png")
-        page.save(page_path, 'PNG')
+    # for i, page in enumerate(pages):
+    #     page_path = os.path.join(output_path, f"page_{i+1}.png")
+    #     page.save(page_path, 'PNG')
     # Save each page as a PNG image
     # for i, page in enumerate(pages):
     #     page.save(os.path.join(output_path, f"page_{i+1}.png"), 'PNG')
@@ -377,7 +377,7 @@ def send_to_mintsoft(response_text, order_number, consignmentNo):
 
 
     # Convert PNG to Base64
-    with open(os.path.join(output_path, 'page_1.png'), 'rb') as f:
+    with open(os.path.join(output_path, 'pages.png'), 'rb') as f:
         png_data = f.read()
         LabelAsBase64 = base64.b64encode(png_data).decode('utf-8')
 
