@@ -394,9 +394,9 @@ def send_to_mintsoft(response_text, order_number, consignmentNo):
                 "TrackingNumber": consignmentNo,
                 "TrackingUrl": None,
                 "ParcelNo": 1,
-                "LabelAsBase64": LabelAsBase64,
+                "LabelAsBase64": CustomsPDFDocumentAsBase64,
                 "CustomsDocumentName": "CN22",
-                "CustomsPDFDocumentAsBase64": CustomsPDFDocumentAsBase64
+                "CustomsPDFDocumentAsBase64": LabelAsBase64
                 }
             ]
         }
