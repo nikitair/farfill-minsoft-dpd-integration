@@ -386,12 +386,12 @@ def send_to_mintsoft(response_text, order_number, consignmentNo):
         "Success": True,
         "ErrorMessages": None,
         "Shipment": {
-            "MainTrackingNumber": consignmentNo,
+            "MainTrackingNumber": 'consignmentNo',
             "LabelFormat": "PNG",
             "CustomsDocumentFormat": "PDF",
             "Packages": [
                 {
-                "TrackingNumber": consignmentNo,
+                "TrackingNumber": 'consignmentNo',
                 "TrackingUrl": None,
                 "ParcelNo": 1,
                 "LabelAsBase64": LabelAsBase64,
