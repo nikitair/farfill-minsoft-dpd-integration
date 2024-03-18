@@ -372,14 +372,14 @@ def send_to_mintsoft(response_text, order_number, consignmentNo):
         pdf_data = f.read()
 
     CustomsPDFDocumentAsBase64 = base64.b64encode(pdf_data).decode('utf-8')
-    print(f"CustomsPDFDocumentAsBase64: {CustomsPDFDocumentAsBase64}")
+
 
     # Convert PNG to Base64
     with open(os.path.join(output_path, 'page_1.png'), 'rb') as f:
         png_data = f.read()
 
     LabelAsBase64 = base64.b64encode(png_data).decode('utf-8')
-    print(f"LabelAsBase64: {LabelAsBase64}")
+
 
     # for 
     dpd_to_mintsoft_response={
