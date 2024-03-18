@@ -9,6 +9,8 @@ import datetime
 from logs.logging_config import logger
 import pdfkit
 from pdf2image import convert_from_path
+from PIL import Image
+
 
 login_endpoint = "https://api.dpd.co.uk/user/?action=login"
 login_headers = {
@@ -366,9 +368,23 @@ def send_to_mintsoft(response_text, order_number, consignmentNo):
     #     page_path = os.path.join(output_path, f"page_{i+1}.png")
     #     page.save(page_path, 'PNG')
     # Save each page as a PNG image
-    # for i, page in enumerate(pages):
-    #     page.save(os.path.join(output_path, f"page_{i+1}.png"), 'PNG')
+    max_width = max(page.width for page in pages)
+    total_height = sum(page.height for page in pages)
 
+    # Створюємо порожню картинку для об'єднання сторінок з розрахованою шириною та висотою
+    merged_image = Image.new('RGB', (max_width, total_height))
+
+    # Змінні для відстеження позиції на об'єднаній картинці
+    current_y = 0
+
+    # Об'єднуємо всі сторінки у одну картинку
+    for page in pages:
+        merged_image.paste(page, (0, current_y))
+        current_y += page.height
+
+    # Зберігаємо об'єднану картинку у файл
+    merged_image.save(os.path.join(output_path, "merged_pages.png"), 'PNG')
+    
     # Convert PDF to Base64
     # with open(pdf_file, 'rb') as f:
     #     pdf_data = f.read()
@@ -377,7 +393,7 @@ def send_to_mintsoft(response_text, order_number, consignmentNo):
 
 
     # Convert PNG to Base64
-    with open(os.path.join(output_path, 'pages.png'), 'rb') as f:
+    with open(os.path.join(output_path, 'merged_pages.png'), 'rb') as f:
         png_data = f.read()
         LabelAsBase64 = base64.b64encode(png_data).decode('utf-8')
 
