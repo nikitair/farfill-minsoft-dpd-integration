@@ -381,7 +381,6 @@ def send_to_mintsoft(response_text, order_number, consignmentNo):
     LabelAsBase64 = base64.b64encode(png_data).decode('utf-8')
 
 
-    # for 
     dpd_to_mintsoft_response={
         "Success": True,
         "ErrorMessages": None,
