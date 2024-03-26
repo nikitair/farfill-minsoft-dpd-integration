@@ -26,6 +26,7 @@ geo_session = response.json()["data"]["geoSession"]
 
 def get_label(data):
     shipment_id = data['data']['shipmentId']
+    
     label_endpoint = f"https://api.dpd.co.uk/shipping/shipment/{shipment_id}/label/"
     label_headers = {
         
@@ -187,7 +188,6 @@ def create_shipment_view(payload):
     # service_name = payload["ServiceName"]
     service_code = payload["ServiceCode"]
     delivery_notes = payload["DeliveryNotes"]
-    # client = payload["Client"]
     # warehouse = payload["Warehouse"]
     order_number = payload["OrderNumber"]
     # external_order_reference = payload["ExternalOrderReference"]
@@ -195,13 +195,21 @@ def create_shipment_view(payload):
 
     # ship_from_email = payload["ShipFrom"]["Email"]
     ship_from_phone = payload["ShipFrom"]["Phone"]
-    ship_from_name = payload["ShipFrom"]["Name"]
+    
+    try:
+        ship_from_client_name = payload["Client"]
+    except KeyError:
+        ship_from_client_name = "Default Client Name"
+
     ship_from_address1 = payload["ShipFrom"]["AddressLine1"]
     ship_from_address2 = payload["ShipFrom"]["AddressLine2"]
     # ship_from_address3 = payload["ShipFrom"]["AddressLine3"]
     ship_from_town = payload["ShipFrom"]["Town"]
     ship_from_county = payload["ShipFrom"]["County"]
+
     ship_from_postcode = payload["ShipFrom"]["PostCode"]
+
+
     ship_from_country_code = payload["ShipFrom"]["CountryCode"]
     # ship_from_vat_number = payload["ShipFrom"]["VATNumber"]
     # ship_from_eori_number = payload["ShipFrom"]["EORINumber"]
@@ -216,7 +224,10 @@ def create_shipment_view(payload):
     # ship_to_address3 = payload["ShipTo"]["AddressLine3"]
     ship_to_town = payload["ShipTo"]["Town"]
     ship_to_county = payload["ShipTo"]["County"]
+
     ship_to_postcode = payload["ShipTo"]["PostCode"]
+
+
     ship_to_country_code = payload["ShipTo"]["CountryCode"]
     # ship_to_vat_number = payload["ShipTo"]["VATNumber"]
     # ship_to_eori_number = payload["ShipTo"]["EORINumber"]
@@ -243,7 +254,7 @@ def create_shipment_view(payload):
             "parcel": parcels,
             "collectionDetails": {
                 "contactDetails": {
-                    "contactName": ship_from_name,
+                    "contactName": ship_from_client_name,
                     "telephone": ship_from_phone
                 },
                 "address": {
@@ -294,9 +305,9 @@ def create_shipment_view(payload):
             "networkCode": service_code,
             "numberOfParcels": parcels_count,
             "totalWeight": total_weight,
-            "shippingRef1": "shippingRef1",
-            "shippingRef2": "shippingRef2",
-            "shippingRef3": "shippingRef3",
+            "shippingRef1": order_number,
+            "shippingRef2": ship_from_client_name,
+            "shippingRef3": "",
             "customsValue": 15,
             "deliveryInstructions": delivery_notes,
             "parcelDescription": "GOODS",
@@ -324,16 +335,27 @@ def create_shipment_view(payload):
 
 
     data = response.json()
+    
     response_text = get_label(data)
-    send_mintsoft = send_to_mintsoft(response_text, order_number)
+    consignmentNo = data['data']['consignmentDetail'][0]['consignmentNumber']
+    # consignmentNo = '3015053964'
+    # parcelNumbers = data['data']['consignmentDetail']['parcelNumbers']
+    send_mintsoft = send_to_mintsoft(response_text, order_number, consignmentNo)
 
     return send_mintsoft
 
-def send_to_mintsoft(response_text, order_number):
+def send_to_mintsoft(response_text, order_number, consignmentNo):
     pdf_file = 'label.pdf'
 
     # Convert HTML to PDF
-    pdfkit.from_string(response_text, pdf_file)
+    pdfkit.from_string(response_text, pdf_file, options = {
+        'page-size': 'A7',  # Set the page size
+        'margin-top': '0.1in',
+        'margin-right': '0.1in',
+        'margin-bottom': '0.1in',
+        'margin-left': '0.1in',
+        'zoom': 2.0,  # Increase the zoom factor to make images larger
+    })
 
     # Path where you want to save the PNG images
     output_path = ''
@@ -341,40 +363,39 @@ def send_to_mintsoft(response_text, order_number):
     # Convert PDF to PNG images
     pages = convert_from_path(pdf_file)
 
-    # Save each page as a PNG image
+
     for i, page in enumerate(pages):
         page.save(os.path.join(output_path, f"page_{i+1}.png"), 'PNG')
 
     # Convert PDF to Base64
-    with open(pdf_file, 'rb') as f:
-        pdf_data = f.read()
+    # with open(pdf_file, 'rb') as f:
+    #     pdf_data = f.read()
 
-    CustomsPDFDocumentAsBase64 = base64.b64encode(pdf_data).decode('utf-8')
-    print(f"CustomsPDFDocumentAsBase64: {CustomsPDFDocumentAsBase64}")
+    # CustomsPDFDocumentAsBase64 = base64.b64encode(pdf_data).decode('utf-8')
+
 
     # Convert PNG to Base64
     with open(os.path.join(output_path, 'page_1.png'), 'rb') as f:
         png_data = f.read()
 
     LabelAsBase64 = base64.b64encode(png_data).decode('utf-8')
-    print(f"LabelAsBase64: {LabelAsBase64}")
 
-    
+
     dpd_to_mintsoft_response={
         "Success": True,
         "ErrorMessages": None,
         "Shipment": {
-            "MainTrackingNumber": order_number,
+            "MainTrackingNumber": consignmentNo,
             "LabelFormat": "PNG",
             "CustomsDocumentFormat": "PDF",
             "Packages": [
                 {
-                "TrackingNumber": order_number,
+                "TrackingNumber": consignmentNo,
                 "TrackingUrl": None,
                 "ParcelNo": 1,
                 "LabelAsBase64": LabelAsBase64,
                 "CustomsDocumentName": "CN22",
-                "CustomsPDFDocumentAsBase64": CustomsPDFDocumentAsBase64
+                "CustomsPDFDocumentAsBase64": None#CustomsPDFDocumentAsBase64
                 }
             ]
         }
