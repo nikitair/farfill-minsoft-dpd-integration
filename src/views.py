@@ -234,7 +234,7 @@ def create_shipment_view(payload):
 
     parcels_count = len(payload["Parcels"])
     parcels = payload["Parcels"]
-    total_weight = sum(parcel["Weight"] for parcel in payload["Parcels"]if isinstance(parcel["Weight"], (int, float)))
+    total_weight = round(sum(parcel["Weight"] for parcel in payload["Parcels"]), 1)
     current_time = datetime.datetime.now().isoformat()
 
     if service_code == '01':
