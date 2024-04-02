@@ -9,6 +9,8 @@ import datetime
 from logs.logging_config import logger
 import pdfkit
 from pdf2image import convert_from_path
+from PIL import Image
+
 
 login_endpoint = "https://api.dpd.co.uk/user/?action=login"
 login_headers = {
@@ -42,10 +44,13 @@ def get_label(data):
 
 
 def create_shipment_view(payload):
+    auth_token=None
+    geosession=None
     with open("data/auth_data.json", "r") as file:
         data = json.load(file)
-    geosession = data["geosession"]
-    auth_token = data["auth_token"]
+        geosession = data["geosession"]
+        auth_token = data["auth_token"]
+        logger.info(f'{create_shipment_view.__name__} {geosession} {auth_token}')
 
     endpoint = "https://api.dpd.co.uk/shipping/network/"
     headers = {
@@ -67,119 +72,8 @@ def create_shipment_view(payload):
     }
         
 
-#     payload = {
-#     "AccountNo": "an",
-#     "Password": "pw",
-#     "ShipmentId": "260692",
-#     "ServiceName": "Service 01",
-#     "ServiceCode": "SC01",
-#     "DeliveryNotes": "Please leave in a safe place",
-#     "Client": "Mintsoft",
-#     "Warehouse": "Main Warehouse",
-#     "OrderNumber": "ON123456",
-#     "ExternalOrderReference": "EXT123456",
-#     "Channel": "Manual Input",
-#     "ShipFrom": {
-#         "Email": "shipper@mintsoft.co.uk",
-#         "Phone": "01234 567890",
-#         "Name": "firstname lastname",
-#         "AddressLine1": "Mintsoft Ltd",
-#         "AddressLine2": "Office 9, The Aquarium",
-#         "AddressLine3": "101 Lower Anchor Street, Chelmsford",
-#         "Town": "Essex",
-#         "County": "Essex",
-#         "PostCode": " TE1 1ST",
-#         "CountryCode": "GB",
-#         "VATNumber": "VATNo1234",
-#         "EORINumber": "EORINo123",
-#         "IOSSNumber": "IOSSNo"
-#     },
-#     "ShipTo": {
-#         "Email": "consignee@delivery.co.uk",
-#         "Phone": "07912345678",
-#         "Name": "firstname lastname",
-#         "AddressLine1": "27A The Nook",
-#         "AddressLine2": None,
-#         "AddressLine3": None,
-#         "Town": "Whissendine",
-#         "County": "Rutland",
-#         "PostCode": "75000",
-#         "CountryCode": "FR",
-#         "VATNumber": "VATNo5678",
-#         "EORINumber": "EORINo567"
-#     },
-#     "Parcels": [
-#                 {
-#                     "ParcelNo": 1,
-#                     "UnitOfLength": "CM",
-#                     "Length": 10.0,
-#                     "Width": 10.0,
-#                     "Height": 10.0,
-#                     "UnitOfWeight": "kg",
-#                     "Weight": 2.500,
-#                     "Cost": {
-#                         "Currency": "GBP",
-#                         "Amount": 27.50
-#                         },
-#                     "ParcelItems": [
-#                         {
-#                             "Title": "SKU02-name",
-#                             "SKU": "CC0002-002-M",
-#                             "Quantity": 1,
-#                             "UnitWeight": 0.45,
-#                             "UnitPrice": {
-#                                 "Currency": "GBP",
-#                                 "Amount": 5.00
-#                             },
-#                             "CommodityCode": "61052010",
-#                             "CustomsDescription": "Customs-SKU02",
-#                             "CountryOfManufacture ": "UNITED KINGDOM"
-#                         },
-#                         {
-#                             "Title": "SKU01-name",
-#                             "SKU": "CC0003-003-M",
-#                             "Quantity": 1,
-#                             "UnitWeight": 0.45,
-#                             "UnitPrice": {
-#                                 "Currency": "GBP",
-#                                 "Amount": 5.00
-#                             },
-#                             "CommodityCode": "61052010",
-#                             "CustomsDescription": "Customs-SKU01",
-#                             "CountryOfManufacture ": "UNITED KINGDOM"
-#                         }
-#                     ]
-#                 },
-#                 {
-#                     "ParcelNo": 2,
-#                     "UnitOfLength": "CM",
-#                     "Length": 10.0,
-#                     "Width": 10.0,
-#                     "Height": 10.0,
-#                     "UnitOfWeight": "kg",
-#                     "Weight": 2.500,
-#                     "Cost": {
-#                         "Currency": "GBP",
-#                         "Amount": 27.50
-#                     },
-#                     "ParcelItems": [
-#                         {
-#                             "Title": "SKU08-name",
-#                             "Quantity": 1,
-#                             "UnitWeight": 0.45,
-#                             "UnitPrice": {
-#                                 "Currency": "GBP",
-#                                 "Amount": 5.00
-#                             },
-#                             "CommodityCode": "SKU08-name",
-#                             "CustomsDescription": "Customs-SKU08",
-#                             "CountryOfManufacture ": "UK"
-#                         }
-#                     ]
-#                 }
-#             ]
-# }
-
+    
+    print(payload)
 
 
     # account_no = payload["AccountNo"]
@@ -359,13 +253,34 @@ def send_to_mintsoft(response_text, order_number, consignmentNo):
 
     # Path where you want to save the PNG images
     output_path = ''
-
+    
     # Convert PDF to PNG images
     pages = convert_from_path(pdf_file)
+    num_pages = len(pages)
+    if num_pages!=3:
+        num_pages = (num_pages - 1)/2
+    
+    # print(num_pages)
 
+    for i in range(len(pages) - 2, 0, -1):
+        if i % 2 != 0:
+            del pages[i]
 
-    for i, page in enumerate(pages):
-        page.save(os.path.join(output_path, f"page_{i+1}.png"), 'PNG')
+    if len(pages) % num_pages != 0:
+        del pages[-1]
+
+    combined_image = Image.new('RGB', (pages[0].width, sum(page.height for page in pages)))
+    y_offset = 0
+    for page in pages:
+        combined_image.paste(page, (0, y_offset))
+        y_offset += page.height
+
+    combined_image.save('combined_pages.png')
+
+    with open('combined_pages.png', 'rb') as f:
+        png_data = f.read()
+    # for i, page in enumerate(pages):
+    #     page.save(os.path.join(output_path, f"page_{i+1}.png"), 'PNG')
 
     # Convert PDF to Base64
     # with open(pdf_file, 'rb') as f:
@@ -375,10 +290,13 @@ def send_to_mintsoft(response_text, order_number, consignmentNo):
 
 
     # Convert PNG to Base64
-    with open(os.path.join(output_path, 'page_1.png'), 'rb') as f:
-        png_data = f.read()
+    # with open(os.path.join(output_path, 'page_1.png'), 'rb') as f:
+    #     png_data = f.read()
 
     LabelAsBase64 = base64.b64encode(png_data).decode('utf-8')
+    # print(LabelAsBase64)
+    with open('label_base64.txt', 'w') as f:
+        f.write(LabelAsBase64)
 
 
     dpd_to_mintsoft_response={
@@ -440,4 +358,117 @@ def cancel_shipment_view(data):
             "ErrorMessages": [ response.text ]  
             }  
     
-
+payload = {
+    "AccountNo": "an",
+    "Password": "pw",
+    "ShipmentId": "260692",
+    "ServiceName": "Service 01",
+    "ServiceCode": "SC01",
+    "DeliveryNotes": "Please leave in a safe place",
+    "Client": "Mintsoft",
+    "Warehouse": "Main Warehouse",
+    "OrderNumber": "ON123456",
+    "ExternalOrderReference": "EXT123456",
+    "Channel": "Manual Input",
+    "ShipFrom": {
+        "Email": "shipper@mintsoft.co.uk",
+        "Phone": "01234 567890",
+        "Name": "firstname lastname",
+        "AddressLine1": "Mintsoft Ltd",
+        "AddressLine2": "Office 9, The Aquarium",
+        "AddressLine3": "101 Lower Anchor Street, Chelmsford",
+        "Town": "Essex",
+        "County": "Essex",
+        "PostCode": " TE1 1ST",
+        "CountryCode": "GB",
+        "VATNumber": "VATNo1234",
+        "EORINumber": "EORINo123",
+        "IOSSNumber": "IOSSNo"
+    },
+    "ShipTo": {
+        "Email": "consignee@delivery.co.uk",
+        "Phone": "07912345678",
+        "Name": "firstname lastname",
+        "AddressLine1": "27A The Nook",
+        "AddressLine2": None,
+        "AddressLine3": None,
+        "Town": "Whissendine",
+        "County": "Rutland",
+        "PostCode": "75000",
+        "CountryCode": "FR",
+        "VATNumber": "VATNo5678",
+        "EORINumber": "EORINo567"
+    },
+    "Parcels": [
+                {
+                    "ParcelNo": 1,
+                    "UnitOfLength": "CM",
+                    "Length": 10.0,
+                    "Width": 10.0,
+                    "Height": 10.0,
+                    "UnitOfWeight": "kg",
+                    "Weight": 2.500,
+                    "Cost": {
+                        "Currency": "GBP",
+                        "Amount": 27.50
+                        },
+                    "ParcelItems": [
+                        {
+                            "Title": "SKU02-name",
+                            "SKU": "CC0002-002-M",
+                            "Quantity": 1,
+                            "UnitWeight": 0.45,
+                            "UnitPrice": {
+                                "Currency": "GBP",
+                                "Amount": 5.00
+                            },
+                            "CommodityCode": "61052010",
+                            "CustomsDescription": "Customs-SKU02",
+                            "CountryOfManufacture ": "UNITED KINGDOM"
+                        },
+                        {
+                            "Title": "SKU01-name",
+                            "SKU": "CC0003-003-M",
+                            "Quantity": 1,
+                            "UnitWeight": 0.45,
+                            "UnitPrice": {
+                                "Currency": "GBP",
+                                "Amount": 5.00
+                            },
+                            "CommodityCode": "61052010",
+                            "CustomsDescription": "Customs-SKU01",
+                            "CountryOfManufacture ": "UNITED KINGDOM"
+                        }
+                    ]
+                },
+                {
+                    "ParcelNo": 2,
+                    "UnitOfLength": "CM",
+                    "Length": 10.0,
+                    "Width": 10.0,
+                    "Height": 10.0,
+                    "UnitOfWeight": "kg",
+                    "Weight": 2.500,
+                    "Cost": {
+                        "Currency": "GBP",
+                        "Amount": 27.50
+                    },
+                    "ParcelItems": [
+                        {
+                            "Title": "SKU08-name",
+                            "Quantity": 1,
+                            "UnitWeight": 0.45,
+                            "UnitPrice": {
+                                "Currency": "GBP",
+                                "Amount": 5.00
+                            },
+                            "CommodityCode": "SKU08-name",
+                            "CustomsDescription": "Customs-SKU08",
+                            "CountryOfManufacture ": "UK"
+                        }
+                    ]
+                },
+               
+                
+            ]
+}
